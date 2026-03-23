@@ -13,9 +13,15 @@ dependencies = [
 dev = [
     "pytest>=8.4.0",
 ]
+recap = [
+    "scipy>=1.14.0",
+    "librosa>=0.10.0",
+    "matplotlib>=3.9.0",
+]
 
 [project.scripts]
 extreme-motion-reimpl = "extreme_motion_reimpl.cli:main"
+bboy-recap = "extreme_motion_reimpl.recap.cli:main"
 
 [build-system]
 requires = ["setuptools>=68", "wheel"]
