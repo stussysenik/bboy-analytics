@@ -1,0 +1,82 @@
+{
+  "hypothesis": {
+    "H1": "\u03bc > 0.3 on beat-aligned toprock",
+    "H1_supported": true,
+    "p_value": 0.0,
+    "effect_size_cohens_d": 4.1452
+  },
+  "on_beat_toprock": {
+    "mean_mu": 0.424855,
+    "std_mu": 0.080659,
+    "n_videos": 3,
+    "per_video": [
+      {
+        "video_id": "RS0mFARO1x4",
+        "seq_idx": 4,
+        "bpm": 125.34429168701172,
+        "mu": 0.3802125153117175,
+        "tau_star_ms": 200.0
+      },
+      {
+        "video_id": "HQbI8aWRU7o",
+        "seq_idx": 3,
+        "bpm": 133.1632843017578,
+        "mu": 0.35626926669090925,
+        "tau_star_ms": 200.0
+      },
+      {
+        "video_id": "k1RTNQxNt6Q",
+        "seq_idx": 1,
+        "bpm": 120.27928161621094,
+        "mu": 0.5380824267489999,
+        "tau_star_ms": 200.0
+      }
+    ]
+  },
+  "controls": {
+    "random_beats_mu": 0.009247699128734965,
+    "random_motion_mu": 0.018123534794860605,
+    "powermove_mu": 0.0855710290301873
+  },
+  "separation": {
+    "onbeat_vs_random": 45.9,
+    "onbeat_vs_powermove": 5.0
+  },
+  "sensitivity_sweep": {
+    "11": {
+      "mu": 0.6490649045645553,
+      "tau_star_ms": 0.0,
+      "beat_alignment_pct": 91.3
+    },
+    "15": {
+      "mu": 0.6439221512861866,
+      "tau_star_ms": 0.0,
+      "beat_alignment_pct": 100.0
+    },
+    "21": {
+      "mu": 0.4396262323584884,
+      "tau_star_ms": 0.0,
+      "beat_alignment_pct": 91.3
+    },
+    "31": {
+      "mu": 0.3802125153117175,
+      "tau_star_ms": 200.0,
+      "beat_alignment_pct": 23.2
+    },
+    "41": {
+      "mu": 0.12293693173277732,
+      "tau_star_ms": 133.33333333333334,
+      "beat_alignment_pct": 53.6
+    },
+    "61": {
+      "mu": 0.25399179288205975,
+      "tau_star_ms": 200.0,
+      "beat_alignment_pct": 23.2
+    }
+  },
+  "data_source": {
+    "videos": "BRACE dataset (ECCV 2022) \u2014 Red Bull BC One",
+    "beat_annotations": "BRACE ground truth (manually annotated)",
+    "joint_source": "Calibrated kinematic simulation (SMPL 22-joint)"
+  }
+}

@@ -1,8 +1,11 @@
-# Separate repos
+# Separate repos / external clones
 autoresearch/
+gvhmr_src/
 
-# Data (large)
+# Data & model weights (large)
 data/brace/
+**/body_models/
+**/checkpoints/
 
 # Python
 __pycache__/
@@ -32,8 +35,11 @@ Thumbs.db
 *.swp
 *.swo
 
-# Claude/Studio
+# Claude/Studio/Tools
 .claude/
+.claude.json
+.bun/
+.codex/
 .superpowers/
 .lightning_studio/
 .config/
