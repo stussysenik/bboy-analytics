@@ -1,0 +1,30 @@
+{
+  "paper_id": "motionbert",
+  "mode": "reimplementation",
+  "canonical_metrics": {
+    "mpjpe_mm": 52.9,
+    "derivative_snr_db": 9.7
+  },
+  "applied_metrics": {
+    "inversion_coverage": 0.69,
+    "acceleration_cleanliness": 0.64,
+    "audio_motion_stability": 0.7
+  },
+  "runtime_cost": {
+    "wall_clock_seconds": 194.0,
+    "gpu_hours": 0.36
+  },
+  "code_stats": {
+    "implementation_loc": 1180,
+    "files_touched": 8,
+    "shared_module_ratio": 0.73
+  },
+  "artifacts": [
+    "artifacts/motionbert/reimpl_pose_eval.json",
+    "artifacts/motionbert/kinematic_signature.csv"
+  ],
+  "open_questions": [
+    "Pretraining may still matter for highly tangled floorwork."
+  ],
+  "notes": "Minimal pose-lift implementation tuned for derivative cleanliness rather than generic benchmark saturation."
+}

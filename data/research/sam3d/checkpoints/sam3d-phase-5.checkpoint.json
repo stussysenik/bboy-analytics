@@ -1,0 +1,15 @@
+{
+  "phaseId": "sam3d-phase-5",
+  "paperId": "sam3d",
+  "status": "complete",
+  "startedAt": "2026-03-23T06:04:32.707Z",
+  "completedAt": "2026-03-23T06:22:51.227Z",
+  "followupsCompleted": 1,
+  "artifacts": [
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/sam3d/sam3d-phase-5-gap-identification.md",
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/sam3d/sam3d-phase-5-gap-identification-followup-1-1.md",
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/sam3d/sam3d-phase-5-gap-identification-followup-1-2.md",
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/sam3d/sam3d-phase-5-gap-identification-followup-1-3.md"
+  ],
+  "bytesWritten": 94104
+}

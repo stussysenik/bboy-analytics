@@ -1,0 +1,18 @@
+{
+  "phaseId": "cotracker3-phase-1",
+  "paperId": "cotracker3",
+  "status": "complete",
+  "startedAt": "2026-03-23T03:06:49.697Z",
+  "completedAt": "2026-03-23T03:34:01.601Z",
+  "followupsCompleted": 2,
+  "artifacts": [
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-1-architecture-survey.md",
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-1-architecture-survey-followup-1-1.md",
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-1-architecture-survey-followup-1-2.md",
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-1-architecture-survey-followup-1-3.md",
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-1-architecture-survey-followup-2-1.md",
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-1-architecture-survey-followup-2-2.md",
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-1-architecture-survey-followup-2-3.md"
+  ],
+  "bytesWritten": 194573
+}

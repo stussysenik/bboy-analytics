@@ -1,0 +1,30 @@
+{
+  "paper_id": "sam4d",
+  "mode": "reimplementation",
+  "canonical_metrics": {
+    "temporal_consistency": 0.74,
+    "cross_modal_prompt_transfer": 0.7
+  },
+  "applied_metrics": {
+    "inversion_tracking_stability": 0.68,
+    "cross_modal_prompt_transfer": 0.7,
+    "audio_motion_stability": 0.71
+  },
+  "runtime_cost": {
+    "wall_clock_seconds": 371.0,
+    "gpu_hours": 0.63
+  },
+  "code_stats": {
+    "implementation_loc": 1260,
+    "files_touched": 10,
+    "shared_module_ratio": 0.69
+  },
+  "artifacts": [
+    "artifacts/sam4d/reimpl_temporal_metrics.json",
+    "artifacts/sam4d/prompt_transfer_preview.mp4"
+  ],
+  "open_questions": [
+    "Toy depth proxy may understate cross-modal memory failures."
+  ],
+  "notes": "UMPE plus motion-aware memory prototype aimed at RGB-depth breakdance clips."
+}

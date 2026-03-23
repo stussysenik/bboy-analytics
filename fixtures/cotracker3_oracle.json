@@ -1,0 +1,29 @@
+{
+  "paper_id": "cotracker3",
+  "mode": "oracle",
+  "canonical_metrics": {
+    "delta_avg_vis": 76.7,
+    "occlusion_recovery": 0.84
+  },
+  "applied_metrics": {
+    "track_continuity": 0.83,
+    "inversion_robustness": 0.79,
+    "audio_motion_stability": 0.74
+  },
+  "runtime_cost": {
+    "wall_clock_seconds": 92.0,
+    "gpu_hours": 0.19
+  },
+  "code_stats": {
+    "implementation_loc": 1,
+    "files_touched": 1,
+    "shared_module_ratio": 1.0
+  },
+  "artifacts": [
+    "artifacts/cotracker3/oracle_tracks.mp4"
+  ],
+  "open_questions": [
+    "Oracle run uses published checkpoint without single_point=True."
+  ],
+  "notes": "Published checkpoint run on TAP-Vid mini plus applied clip subset."
+}

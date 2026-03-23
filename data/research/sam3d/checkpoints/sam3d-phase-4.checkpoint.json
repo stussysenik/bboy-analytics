@@ -1,0 +1,14 @@
+{
+  "phaseId": "sam3d-phase-4",
+  "paperId": "sam3d",
+  "status": "complete",
+  "startedAt": "2026-03-23T05:48:39.053Z",
+  "completedAt": "2026-03-23T06:04:32.695Z",
+  "followupsCompleted": 1,
+  "artifacts": [
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/sam3d/sam3d-phase-4-breakdance-adaptation.md",
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/sam3d/sam3d-phase-4-breakdance-adaptation-followup-1-1.md",
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/sam3d/sam3d-phase-4-breakdance-adaptation-followup-1-2.md"
+  ],
+  "bytesWritten": 86066
+}

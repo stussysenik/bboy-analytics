@@ -1,0 +1,16 @@
+{
+  "name": "extreme-motion-research",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "bun run research-runner.ts",
+    "status": "bun run research-runner.ts --status",
+    "resume": "bun run research-runner.ts --resume"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0",
+    "js-yaml": "^4.1.0",
+    "@types/js-yaml": "^4.0.9"
+  }
+}

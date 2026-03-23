@@ -1,0 +1,15 @@
+{
+  "phaseId": "sam3d-phase-2",
+  "paperId": "sam3d",
+  "status": "complete",
+  "startedAt": "2026-03-23T05:18:22.569Z",
+  "completedAt": "2026-03-23T05:35:01.089Z",
+  "followupsCompleted": 1,
+  "artifacts": [
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/sam3d/sam3d-phase-2-math-deep-dive.md",
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/sam3d/sam3d-phase-2-math-deep-dive-followup-1-1.md",
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/sam3d/sam3d-phase-2-math-deep-dive-followup-1-2.md",
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/sam3d/sam3d-phase-2-math-deep-dive-followup-1-3.md"
+  ],
+  "bytesWritten": 86832
+}

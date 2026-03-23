@@ -1,0 +1,15 @@
+{
+  "phaseId": "motionbert-phase-3",
+  "paperId": "motionbert",
+  "status": "complete",
+  "startedAt": "2026-03-23T02:06:19.231Z",
+  "completedAt": "2026-03-23T02:19:51.022Z",
+  "followupsCompleted": 1,
+  "artifacts": [
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-3-minimal-implementation-audit.md",
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-3-minimal-implementation-audit-followup-1-1.md",
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-3-minimal-implementation-audit-followup-1-2.md",
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-3-minimal-implementation-audit-followup-1-3.md"
+  ],
+  "bytesWritten": 85377
+}

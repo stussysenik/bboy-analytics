@@ -1,0 +1,29 @@
+{
+  "paper_id": "sam3d",
+  "mode": "oracle",
+  "canonical_metrics": {
+    "mask_projection_iou": 0.63,
+    "region_merge_stability": 0.72
+  },
+  "applied_metrics": {
+    "dancer_bleed_rate": 0.09,
+    "scene_coherence": 0.76,
+    "audio_motion_stability": 0.71
+  },
+  "runtime_cost": {
+    "wall_clock_seconds": 244.0,
+    "gpu_hours": 0.41
+  },
+  "code_stats": {
+    "implementation_loc": 1,
+    "files_touched": 1,
+    "shared_module_ratio": 1.0
+  },
+  "artifacts": [
+    "artifacts/sam3d/oracle_projection_metrics.json"
+  ],
+  "open_questions": [
+    "Oracle scene priors are still ScanNet-like, not dancer-specific."
+  ],
+  "notes": "Official pipeline reduced to a ScanNet mini slice plus a toy RGBD dance scene."
+}

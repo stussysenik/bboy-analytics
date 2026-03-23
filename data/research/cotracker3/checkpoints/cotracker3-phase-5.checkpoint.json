@@ -1,0 +1,15 @@
+{
+  "phaseId": "cotracker3-phase-5",
+  "paperId": "cotracker3",
+  "status": "complete",
+  "startedAt": "2026-03-23T04:36:29.588Z",
+  "completedAt": "2026-03-23T04:54:38.966Z",
+  "followupsCompleted": 1,
+  "artifacts": [
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-5-gap-identification.md",
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-5-gap-identification-followup-1-1.md",
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-5-gap-identification-followup-1-2.md",
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-5-gap-identification-followup-1-3.md"
+  ],
+  "bytesWritten": 96121
+}

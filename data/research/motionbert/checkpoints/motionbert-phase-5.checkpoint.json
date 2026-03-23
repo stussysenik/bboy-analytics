@@ -1,0 +1,15 @@
+{
+  "phaseId": "motionbert-phase-5",
+  "paperId": "motionbert",
+  "status": "complete",
+  "startedAt": "2026-03-23T02:39:44.708Z",
+  "completedAt": "2026-03-23T02:58:08.232Z",
+  "followupsCompleted": 1,
+  "artifacts": [
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-5-gap-identification.md",
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-5-gap-identification-followup-1-1.md",
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-5-gap-identification-followup-1-2.md",
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-5-gap-identification-followup-1-3.md"
+  ],
+  "bytesWritten": 99153
+}

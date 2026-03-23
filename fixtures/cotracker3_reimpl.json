@@ -1,0 +1,30 @@
+{
+  "paper_id": "cotracker3",
+  "mode": "reimplementation",
+  "canonical_metrics": {
+    "delta_avg_vis": 73.3,
+    "occlusion_recovery": 0.76
+  },
+  "applied_metrics": {
+    "track_continuity": 0.78,
+    "inversion_robustness": 0.74,
+    "audio_motion_stability": 0.69
+  },
+  "runtime_cost": {
+    "wall_clock_seconds": 118.0,
+    "gpu_hours": 0.24
+  },
+  "code_stats": {
+    "implementation_loc": 920,
+    "files_touched": 7,
+    "shared_module_ratio": 0.78
+  },
+  "artifacts": [
+    "artifacts/cotracker3/reimpl_tracks.mp4",
+    "artifacts/cotracker3/occlusion_eval.json"
+  ],
+  "open_questions": [
+    "Long-horizon online windows still drift slightly on two-person clips."
+  ],
+  "notes": "Paper-faithful reimplementation with shared clip loader and evaluation harness."
+}

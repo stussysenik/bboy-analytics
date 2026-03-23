@@ -1,0 +1,100 @@
+papers:
+  - id: motionbert
+    name: MotionBERT
+    full_title: "MotionBERT: A Unified Perspective on Learning Human Motion Representations"
+    authors: "Zhu, W., Ma, X., Liu, Z., Liu, L., Wu, W., Wang, Y."
+    venue: "ICCV 2023"
+    year: 2023
+    arxiv: "2210.06085"
+    github: "Walter0807/MotionBERT"
+    project_page: "https://motionbert.github.io/"
+    why_bboy: >
+      243-frame temporal window captures full power move sequences (windmills, flares
+      last 2-5 seconds at 30fps = 60-150 frames). Unified architecture handles pose
+      estimation, mesh recovery, and action recognition in one model. The dual-stream
+      spatial-temporal transformer (DSTformer) is the foundation for 3D pose lifting
+      from 2D keypoints, which directly feeds the movement spectrogram
+      S_m(j,t) = velocity(joint_j, t). Clean 3D trajectories → clean derivatives →
+      reliable audio-motion cross-correlation.
+    critical_gap: "3D pose estimation — struggles with inversions (SAM-Body4D fixes this)"
+    key_concepts:
+      - "Dual-stream Spatial-Temporal Transformer (DSTformer)"
+      - "Learnable motion attention: spatial stream (inter-joint) + temporal stream (across-frame)"
+      - "3D-to-2D projection pretraining on AMASS motion capture dataset"
+      - "Unified pretraining for pose3d, mesh recovery, and action recognition"
+      - "243-frame temporal receptive field"
+      - "~39mm MPJPE on Human3.6M"
+    official_sources:
+      - label: "arXiv Paper"
+        url: "https://arxiv.org/abs/2210.06085"
+      - label: "GitHub Repository"
+        url: "https://github.com/Walter0807/MotionBERT"
+      - label: "Pose3D Documentation"
+        url: "https://raw.githubusercontent.com/Walter0807/MotionBERT/main/docs/pose3d.md"
+
+  - id: cotracker3
+    name: CoTracker3
+    full_title: "CoTracker3: Simpler and Better Point Tracking by Pseudo-Labelling Real Videos"
+    authors: "Karaev, N., Tarasov, A., Girdhar, R., Neverova, N., Vedaldi, A., Novotny, D."
+    venue: "ICLR 2025"
+    year: 2024
+    arxiv: "2410.11831"
+    github: "facebookresearch/co-tracker"
+    project_page: "https://cotracker3.github.io/"
+    why_bboy: >
+      Tracks up to 70K points through occlusions with joint correlation between points.
+      Online real-time mode via sliding window. Critical for windmills, flares, and any
+      power move where limbs constantly occlude each other. Semi-supervised training with
+      pseudo-labels from real video means it generalizes to breakdancing without needing
+      domain-specific training data. Dense tracking feeds directly into derivative
+      computation for the movement spectrogram — more tracked points means smoother
+      velocity/acceleration signals and better audio-motion cross-correlation.
+    critical_gap: "Multi-dancer occlusion tracking — tracks through self-occlusion and partner interference"
+    key_concepts:
+      - "Transformer-based point tracking with correlation volumes"
+      - "Sliding window with online mode for real-time inference"
+      - "Virtual tracks: unrolled refinement iterations treated as virtual tracks"
+      - "Semi-supervised training with pseudo-labels from real video"
+      - "Joint tracking of multiple points (correlation between points improves accuracy)"
+      - "70K point capacity per video"
+    official_sources:
+      - label: "arXiv Paper"
+        url: "https://arxiv.org/abs/2410.11831"
+      - label: "GitHub Repository"
+        url: "https://github.com/facebookresearch/co-tracker"
+      - label: "Project Page"
+        url: "https://cotracker3.github.io/"
+
+  - id: sam3d
+    name: SAM3D
+    full_title: "SAM3D: Segment Anything in 3D Scenes"
+    authors: "Yang, Y., Wu, Y., Zhai, W., Zhang, D., Cao, Z."
+    venue: "Preprint 2023"
+    year: 2023
+    arxiv: "2306.03908"
+    github: "Pointcept/SegmentAnything3D"
+    project_page: ""
+    why_bboy: >
+      Transfers SAM's 2D segmentation power into 3D point clouds. For breakdancing
+      analysis, this enables dancer-vs-scene separation in 3D — isolating the bboy
+      from the floor, crowd, and stage geometry. The 2D-to-3D mask projection pipeline
+      means we can leverage SAM 2/3's video-level tracking to get consistent 3D dancer
+      segmentation across frames. Critical for building clean 3D meshes that feed into
+      SAM-Body4D for training-free 4D human mesh recovery. Also reference SAM-Body4D
+      (Dec 2025) which builds on this foundation for pose-agnostic mesh recovery that
+      handles inversions natively.
+    critical_gap: "2D-to-3D segmentation transfer — isolating dancer geometry from scene"
+    key_concepts:
+      - "2D-to-3D mask projection via camera intrinsics/extrinsics"
+      - "SAM backbone for 2D segmentation (prompt-based: text, box, point)"
+      - "3D region merging with boundary-aware grouping"
+      - "Point cloud processing with superpoint extraction"
+      - "Multi-view aggregation for robust 3D masks"
+      - "Extension path: SAM-Body4D for training-free 4D mesh recovery"
+    official_sources:
+      - label: "arXiv Paper"
+        url: "https://arxiv.org/abs/2306.03908"
+      - label: "GitHub Repository"
+        url: "https://github.com/Pointcept/SegmentAnything3D"
+      - label: "SAM 2 (backbone)"
+        url: "https://github.com/facebookresearch/sam2"

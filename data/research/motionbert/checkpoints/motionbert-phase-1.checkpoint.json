@@ -1,0 +1,18 @@
+{
+  "phaseId": "motionbert-phase-1",
+  "paperId": "motionbert",
+  "status": "complete",
+  "startedAt": "2026-03-23T01:26:34.629Z",
+  "completedAt": "2026-03-23T01:47:21.160Z",
+  "followupsCompleted": 2,
+  "artifacts": [
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-1-architecture-survey.md",
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-1-architecture-survey-followup-1-1.md",
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-1-architecture-survey-followup-1-2.md",
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-1-architecture-survey-followup-1-3.md",
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-1-architecture-survey-followup-2-1.md",
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-1-architecture-survey-followup-2-2.md",
+    "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-1-architecture-survey-followup-2-3.md"
+  ],
+  "bytesWritten": 145164
+}

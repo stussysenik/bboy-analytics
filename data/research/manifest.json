@@ -1,0 +1,265 @@
+{
+  "experimentId": "reimpl-research-1774229194628",
+  "startedAt": "2026-03-23T01:26:34.628Z",
+  "lastUpdated": "2026-03-23T06:31:23.247Z",
+  "papers": {
+    "motionbert": {
+      "paperId": "motionbert",
+      "phases": {
+        "motionbert-phase-1": {
+          "phaseId": "motionbert-phase-1",
+          "paperId": "motionbert",
+          "status": "complete",
+          "startedAt": "2026-03-23T01:26:34.629Z",
+          "completedAt": "2026-03-23T01:47:21.160Z",
+          "followupsCompleted": 2,
+          "artifacts": [
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-1-architecture-survey.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-1-architecture-survey-followup-1-1.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-1-architecture-survey-followup-1-2.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-1-architecture-survey-followup-1-3.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-1-architecture-survey-followup-2-1.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-1-architecture-survey-followup-2-2.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-1-architecture-survey-followup-2-3.md"
+          ],
+          "bytesWritten": 145164
+        },
+        "motionbert-phase-2": {
+          "phaseId": "motionbert-phase-2",
+          "paperId": "motionbert",
+          "status": "complete",
+          "startedAt": "2026-03-23T01:47:21.168Z",
+          "completedAt": "2026-03-23T02:06:19.225Z",
+          "followupsCompleted": 1,
+          "artifacts": [
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-2-math-deep-dive.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-2-math-deep-dive-followup-1-1.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-2-math-deep-dive-followup-1-2.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-2-math-deep-dive-followup-1-3.md"
+          ],
+          "bytesWritten": 115134
+        },
+        "motionbert-phase-3": {
+          "phaseId": "motionbert-phase-3",
+          "paperId": "motionbert",
+          "status": "complete",
+          "startedAt": "2026-03-23T02:06:19.231Z",
+          "completedAt": "2026-03-23T02:19:51.022Z",
+          "followupsCompleted": 1,
+          "artifacts": [
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-3-minimal-implementation-audit.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-3-minimal-implementation-audit-followup-1-1.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-3-minimal-implementation-audit-followup-1-2.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-3-minimal-implementation-audit-followup-1-3.md"
+          ],
+          "bytesWritten": 85377
+        },
+        "motionbert-phase-4": {
+          "phaseId": "motionbert-phase-4",
+          "paperId": "motionbert",
+          "status": "complete",
+          "startedAt": "2026-03-23T02:19:51.029Z",
+          "completedAt": "2026-03-23T02:39:44.701Z",
+          "followupsCompleted": 1,
+          "artifacts": [
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-4-breakdance-adaptation.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-4-breakdance-adaptation-followup-1-1.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-4-breakdance-adaptation-followup-1-2.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-4-breakdance-adaptation-followup-1-3.md"
+          ],
+          "bytesWritten": 101401
+        },
+        "motionbert-phase-5": {
+          "phaseId": "motionbert-phase-5",
+          "paperId": "motionbert",
+          "status": "complete",
+          "startedAt": "2026-03-23T02:39:44.708Z",
+          "completedAt": "2026-03-23T02:58:08.232Z",
+          "followupsCompleted": 1,
+          "artifacts": [
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-5-gap-identification.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-5-gap-identification-followup-1-1.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-5-gap-identification-followup-1-2.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/motionbert/motionbert-phase-5-gap-identification-followup-1-3.md"
+          ],
+          "bytesWritten": 99153
+        }
+      },
+      "guideGenerated": true,
+      "guideQualityScore": 90
+    },
+    "cotracker3": {
+      "paperId": "cotracker3",
+      "phases": {
+        "cotracker3-phase-1": {
+          "phaseId": "cotracker3-phase-1",
+          "paperId": "cotracker3",
+          "status": "complete",
+          "startedAt": "2026-03-23T03:06:49.697Z",
+          "completedAt": "2026-03-23T03:34:01.601Z",
+          "followupsCompleted": 2,
+          "artifacts": [
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-1-architecture-survey.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-1-architecture-survey-followup-1-1.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-1-architecture-survey-followup-1-2.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-1-architecture-survey-followup-1-3.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-1-architecture-survey-followup-2-1.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-1-architecture-survey-followup-2-2.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-1-architecture-survey-followup-2-3.md"
+          ],
+          "bytesWritten": 194573
+        },
+        "cotracker3-phase-2": {
+          "phaseId": "cotracker3-phase-2",
+          "paperId": "cotracker3",
+          "status": "complete",
+          "startedAt": "2026-03-23T03:34:01.608Z",
+          "completedAt": "2026-03-23T03:53:39.378Z",
+          "followupsCompleted": 1,
+          "artifacts": [
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-2-math-deep-dive.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-2-math-deep-dive-followup-1-1.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-2-math-deep-dive-followup-1-2.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-2-math-deep-dive-followup-1-3.md"
+          ],
+          "bytesWritten": 90648
+        },
+        "cotracker3-phase-3": {
+          "phaseId": "cotracker3-phase-3",
+          "paperId": "cotracker3",
+          "status": "complete",
+          "startedAt": "2026-03-23T03:53:39.394Z",
+          "completedAt": "2026-03-23T04:17:18.135Z",
+          "followupsCompleted": 2,
+          "artifacts": [
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-3-minimal-implementation-audit.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-3-minimal-implementation-audit-followup-1-1.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-3-minimal-implementation-audit-followup-1-2.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-3-minimal-implementation-audit-followup-1-3.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-3-minimal-implementation-audit-followup-2-1.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-3-minimal-implementation-audit-followup-2-2.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-3-minimal-implementation-audit-followup-2-3.md"
+          ],
+          "bytesWritten": 134701
+        },
+        "cotracker3-phase-4": {
+          "phaseId": "cotracker3-phase-4",
+          "paperId": "cotracker3",
+          "status": "complete",
+          "startedAt": "2026-03-23T04:17:18.147Z",
+          "completedAt": "2026-03-23T04:36:29.575Z",
+          "followupsCompleted": 1,
+          "artifacts": [
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-4-breakdance-adaptation.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-4-breakdance-adaptation-followup-1-1.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-4-breakdance-adaptation-followup-1-2.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-4-breakdance-adaptation-followup-1-3.md"
+          ],
+          "bytesWritten": 116778
+        },
+        "cotracker3-phase-5": {
+          "phaseId": "cotracker3-phase-5",
+          "paperId": "cotracker3",
+          "status": "complete",
+          "startedAt": "2026-03-23T04:36:29.588Z",
+          "completedAt": "2026-03-23T04:54:38.966Z",
+          "followupsCompleted": 1,
+          "artifacts": [
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-5-gap-identification.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-5-gap-identification-followup-1-1.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-5-gap-identification-followup-1-2.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/cotracker3/cotracker3-phase-5-gap-identification-followup-1-3.md"
+          ],
+          "bytesWritten": 96121
+        }
+      },
+      "guideGenerated": true,
+      "guideQualityScore": 100
+    },
+    "sam3d": {
+      "paperId": "sam3d",
+      "phases": {
+        "sam3d-phase-1": {
+          "phaseId": "sam3d-phase-1",
+          "paperId": "sam3d",
+          "status": "complete",
+          "startedAt": "2026-03-23T05:03:57.123Z",
+          "completedAt": "2026-03-23T05:18:22.559Z",
+          "followupsCompleted": 2,
+          "artifacts": [
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/sam3d/sam3d-phase-1-architecture-survey.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/sam3d/sam3d-phase-1-architecture-survey-followup-1-1.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/sam3d/sam3d-phase-1-architecture-survey-followup-1-2.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/sam3d/sam3d-phase-1-architecture-survey-followup-1-3.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/sam3d/sam3d-phase-1-architecture-survey-followup-2-1.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/sam3d/sam3d-phase-1-architecture-survey-followup-2-2.md"
+          ],
+          "bytesWritten": 78086
+        },
+        "sam3d-phase-2": {
+          "phaseId": "sam3d-phase-2",
+          "paperId": "sam3d",
+          "status": "complete",
+          "startedAt": "2026-03-23T05:18:22.569Z",
+          "completedAt": "2026-03-23T05:35:01.089Z",
+          "followupsCompleted": 1,
+          "artifacts": [
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/sam3d/sam3d-phase-2-math-deep-dive.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/sam3d/sam3d-phase-2-math-deep-dive-followup-1-1.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/sam3d/sam3d-phase-2-math-deep-dive-followup-1-2.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/sam3d/sam3d-phase-2-math-deep-dive-followup-1-3.md"
+          ],
+          "bytesWritten": 86832
+        },
+        "sam3d-phase-3": {
+          "phaseId": "sam3d-phase-3",
+          "paperId": "sam3d",
+          "status": "complete",
+          "startedAt": "2026-03-23T05:35:01.102Z",
+          "completedAt": "2026-03-23T05:48:39.043Z",
+          "followupsCompleted": 1,
+          "artifacts": [
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/sam3d/sam3d-phase-3-minimal-implementation-audit.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/sam3d/sam3d-phase-3-minimal-implementation-audit-followup-1-1.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/sam3d/sam3d-phase-3-minimal-implementation-audit-followup-1-2.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/sam3d/sam3d-phase-3-minimal-implementation-audit-followup-1-3.md"
+          ],
+          "bytesWritten": 87912
+        },
+        "sam3d-phase-4": {
+          "phaseId": "sam3d-phase-4",
+          "paperId": "sam3d",
+          "status": "complete",
+          "startedAt": "2026-03-23T05:48:39.053Z",
+          "completedAt": "2026-03-23T06:04:32.695Z",
+          "followupsCompleted": 1,
+          "artifacts": [
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/sam3d/sam3d-phase-4-breakdance-adaptation.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/sam3d/sam3d-phase-4-breakdance-adaptation-followup-1-1.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/sam3d/sam3d-phase-4-breakdance-adaptation-followup-1-2.md"
+          ],
+          "bytesWritten": 86066
+        },
+        "sam3d-phase-5": {
+          "phaseId": "sam3d-phase-5",
+          "paperId": "sam3d",
+          "status": "complete",
+          "startedAt": "2026-03-23T06:04:32.707Z",
+          "completedAt": "2026-03-23T06:22:51.227Z",
+          "followupsCompleted": 1,
+          "artifacts": [
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/sam3d/sam3d-phase-5-gap-identification.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/sam3d/sam3d-phase-5-gap-identification-followup-1-1.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/sam3d/sam3d-phase-5-gap-identification-followup-1-2.md",
+            "/Users/s3nik/Desktop/autoresearch-playground/experiments/extreme-motion-reimpl/data/research/sam3d/sam3d-phase-5-gap-identification-followup-1-3.md"
+          ],
+          "bytesWritten": 94104
+        }
+      },
+      "guideGenerated": true,
+      "guideQualityScore": 100
+    }
+  },
+  "totalBytesWritten": 1612050,
+  "completed": true
+}

@@ -1,0 +1,29 @@
+{
+  "paper_id": "sam4d",
+  "mode": "oracle",
+  "canonical_metrics": {
+    "temporal_consistency": 0.8,
+    "cross_modal_prompt_transfer": 0.76
+  },
+  "applied_metrics": {
+    "inversion_tracking_stability": 0.74,
+    "cross_modal_prompt_transfer": 0.76,
+    "audio_motion_stability": 0.73
+  },
+  "runtime_cost": {
+    "wall_clock_seconds": 332.0,
+    "gpu_hours": 0.56
+  },
+  "code_stats": {
+    "implementation_loc": 1,
+    "files_touched": 1,
+    "shared_module_ratio": 1.0
+  },
+  "artifacts": [
+    "artifacts/sam4d/oracle_temporal_metrics.json"
+  ],
+  "open_questions": [
+    "Oracle uses toy RGBD proxy data, not Waymo-4DSeg."
+  ],
+  "notes": "Proxy oracle for the night-one toy RGBD prototype."
+}

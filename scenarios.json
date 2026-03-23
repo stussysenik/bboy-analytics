@@ -1,0 +1,88 @@
+{
+  "scenarios": [
+    {
+      "id": "headspin-loop-01",
+      "video_path": "data/scenarios/headspin-loop-01.mp4",
+      "audio_path": "data/scenarios/headspin-loop-01.wav",
+      "tags": ["inversion", "rotation", "power"],
+      "notes": "Continuous axial rotation with heavy motion blur."
+    },
+    {
+      "id": "windmill-chain-01",
+      "video_path": "data/scenarios/windmill-chain-01.mp4",
+      "audio_path": "data/scenarios/windmill-chain-01.wav",
+      "tags": ["inversion", "floor-contact", "power"],
+      "notes": "Should stress left-right consistency and floor contact."
+    },
+    {
+      "id": "flare-cycle-01",
+      "video_path": "data/scenarios/flare-cycle-01.mp4",
+      "audio_path": "data/scenarios/flare-cycle-01.wav",
+      "tags": ["extreme-articulation", "rotation", "power"],
+      "notes": "Large leg arcs and intermittent self-occlusion."
+    },
+    {
+      "id": "freeze-catch-01",
+      "video_path": "data/scenarios/freeze-catch-01.mp4",
+      "audio_path": "data/scenarios/freeze-catch-01.wav",
+      "tags": ["freeze", "beat-hit"],
+      "notes": "Pose confidence should stay high while velocity collapses."
+    },
+    {
+      "id": "threading-footwork-01",
+      "video_path": "data/scenarios/threading-footwork-01.mp4",
+      "audio_path": "data/scenarios/threading-footwork-01.wav",
+      "tags": ["footwork", "extreme-articulation"],
+      "notes": "Dense limb crossings without full inversion."
+    },
+    {
+      "id": "toprock-accent-01",
+      "video_path": "data/scenarios/toprock-accent-01.mp4",
+      "audio_path": "data/scenarios/toprock-accent-01.wav",
+      "tags": ["upright", "beat-hit"],
+      "notes": "Control clip for timing alignment against cleaner motion."
+    },
+    {
+      "id": "backspin-entry-01",
+      "video_path": "data/scenarios/backspin-entry-01.mp4",
+      "audio_path": "data/scenarios/backspin-entry-01.wav",
+      "tags": ["floor-contact", "rotation"],
+      "notes": "Segmentation should preserve torso continuity during contact."
+    },
+    {
+      "id": "swipe-transition-01",
+      "video_path": "data/scenarios/swipe-transition-01.mp4",
+      "audio_path": "data/scenarios/swipe-transition-01.wav",
+      "tags": ["power", "transition"],
+      "notes": "Large camera-relative displacement in short time."
+    },
+    {
+      "id": "battle-occlusion-01",
+      "video_path": "data/scenarios/battle-occlusion-01.mp4",
+      "audio_path": "data/scenarios/battle-occlusion-01.wav",
+      "tags": ["two-person", "occlusion"],
+      "notes": "Second dancer crosses foreground and breaks simple mask propagation."
+    },
+    {
+      "id": "crowd-edge-01",
+      "video_path": "data/scenarios/crowd-edge-01.mp4",
+      "audio_path": "data/scenarios/crowd-edge-01.wav",
+      "tags": ["crowd", "partial-occlusion"],
+      "notes": "Audience intrusion near frame edge."
+    },
+    {
+      "id": "camera-pan-01",
+      "video_path": "data/scenarios/camera-pan-01.mp4",
+      "audio_path": "data/scenarios/camera-pan-01.wav",
+      "tags": ["camera-motion", "tracking"],
+      "notes": "Tests point tracking under camera motion rather than dancer-only motion."
+    },
+    {
+      "id": "freeze-release-01",
+      "video_path": "data/scenarios/freeze-release-01.mp4",
+      "audio_path": "data/scenarios/freeze-release-01.wav",
+      "tags": ["freeze", "transition", "beat-hit"],
+      "notes": "Useful for acceleration cleanliness and beat-lock release timing."
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "paper_id": "motionbert",
+  "mode": "oracle",
+  "canonical_metrics": {
+    "mpjpe_mm": 48.1,
+    "derivative_snr_db": 12.4
+  },
+  "applied_metrics": {
+    "inversion_coverage": 0.74,
+    "acceleration_cleanliness": 0.71,
+    "audio_motion_stability": 0.73
+  },
+  "runtime_cost": {
+    "wall_clock_seconds": 161.0,
+    "gpu_hours": 0.31
+  },
+  "code_stats": {
+    "implementation_loc": 1,
+    "files_touched": 1,
+    "shared_module_ratio": 1.0
+  },
+  "artifacts": [
+    "artifacts/motionbert/oracle_pose_eval.json"
+  ],
+  "open_questions": [
+    "Oracle numbers use a reduced H36M slice, not the full benchmark."
+  ],
+  "notes": "Official configuration adapted to a mini evaluation slice."
+}

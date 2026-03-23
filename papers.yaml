@@ -1,0 +1,186 @@
+papers:
+  - id: cotracker3
+    name: CoTracker3
+    summary: Dense point tracking for occlusion-heavy motion with breakdance-first applied evaluation.
+    official_sources:
+      - label: Official README
+        url: https://raw.githubusercontent.com/facebookresearch/co-tracker/main/README.md
+      - label: Project Page
+        url: https://cotracker3.github.io/
+    dataset_slice:
+      canonical: TAP-Vid DAVIS mini
+      applied: breakdance-clips-v1
+    research_subject: Track continuity through inversions, self-occlusion, and partner interference.
+    author_packet_targets:
+      - Confirm whether the reimplementation preserves online-window behavior under long clips.
+      - Confirm whether the parity comparison should use single-point or joint-target evaluation.
+    canonical_targets:
+      - name: delta_avg_vis
+        comparator: max_gap
+        target: 5.0
+        weight: 0.7
+        description: Reimplementation should land within 5 points of the oracle.
+      - name: occlusion_recovery
+        comparator: gte
+        target: 0.70
+        weight: 0.3
+        description: Track visibility should recover through occluded intervals.
+    applied_targets:
+      - name: track_continuity
+        comparator: gte
+        target: 0.70
+        weight: 0.4
+      - name: inversion_robustness
+        comparator: gte
+        target: 0.70
+        weight: 0.35
+      - name: audio_motion_stability
+        comparator: gte
+        target: 0.65
+        weight: 0.25
+    oracle_cmd:
+      executor: local
+      workdir: .
+      cmd: python -m extreme_motion_reimpl.fixture_runner --fixture fixtures/cotracker3_oracle.json
+    reimpl_cmd:
+      executor: local
+      workdir: .
+      cmd: python -m extreme_motion_reimpl.fixture_runner --fixture fixtures/cotracker3_reimpl.json
+
+  - id: motionbert
+    name: MotionBERT
+    summary: Motion representation and 3D lifting tuned for derivative cleanliness on extreme articulation.
+    official_sources:
+      - label: Project Page
+        url: https://motionbert.github.io/
+      - label: Pose3D Docs
+        url: https://raw.githubusercontent.com/Walter0807/MotionBERT/main/docs/pose3d.md
+    dataset_slice:
+      canonical: Human3.6M mini
+      applied: breakdance-clips-v1
+    research_subject: Lift extreme articulation to stable 3D trajectories with usable velocity and acceleration signatures.
+    author_packet_targets:
+      - Confirm the minimum pretraining needed before fine-tuning for extreme articulation clips.
+      - Confirm whether MPJPE is the right parity proxy for derivative-sensitive downstream use.
+    canonical_targets:
+      - name: mpjpe_mm
+        comparator: max_gap
+        target: 6.0
+        weight: 0.7
+      - name: derivative_snr_db
+        comparator: gte
+        target: 8.0
+        weight: 0.3
+    applied_targets:
+      - name: inversion_coverage
+        comparator: gte
+        target: 0.65
+        weight: 0.3
+      - name: acceleration_cleanliness
+        comparator: gte
+        target: 0.60
+        weight: 0.35
+      - name: audio_motion_stability
+        comparator: gte
+        target: 0.68
+        weight: 0.35
+    oracle_cmd:
+      executor: local
+      workdir: .
+      cmd: python -m extreme_motion_reimpl.fixture_runner --fixture fixtures/motionbert_oracle.json
+    reimpl_cmd:
+      executor: local
+      workdir: .
+      cmd: python -m extreme_motion_reimpl.fixture_runner --fixture fixtures/motionbert_reimpl.json
+
+  - id: sam3d
+    name: SAM3D
+    summary: 2D-to-3D mask transfer and region merging for dancer-vs-scene separation.
+    official_sources:
+      - label: Official README
+        url: https://raw.githubusercontent.com/Pointcept/SegmentAnything3D/main/README.md
+      - label: Paper
+        url: https://arxiv.org/abs/2306.03908
+    dataset_slice:
+      canonical: ScanNet mini
+      applied: rgbd-dance-scene-v0
+    research_subject: Transfer 2D segmentation into 3D structure without drowning the dancer in background geometry.
+    author_packet_targets:
+      - Confirm whether dancer-specific point merging needs extra heuristics beyond the original scene pipeline.
+      - Confirm whether ScanNet-region priors bias the method against articulated foreground subjects.
+    canonical_targets:
+      - name: mask_projection_iou
+        comparator: gte
+        target: 0.55
+        weight: 0.6
+      - name: region_merge_stability
+        comparator: gte
+        target: 0.65
+        weight: 0.4
+    applied_targets:
+      - name: dancer_bleed_rate
+        comparator: lte
+        target: 0.12
+        weight: 0.4
+      - name: scene_coherence
+        comparator: gte
+        target: 0.70
+        weight: 0.35
+      - name: audio_motion_stability
+        comparator: gte
+        target: 0.66
+        weight: 0.25
+    oracle_cmd:
+      executor: local
+      workdir: .
+      cmd: python -m extreme_motion_reimpl.fixture_runner --fixture fixtures/sam3d_oracle.json
+    reimpl_cmd:
+      executor: local
+      workdir: .
+      cmd: python -m extreme_motion_reimpl.fixture_runner --fixture fixtures/sam3d_reimpl.json
+
+  - id: sam4d
+    name: SAM4D
+    summary: Cross-modal and temporal segmentation memory prototype for RGB plus depth streams.
+    official_sources:
+      - label: Official README
+        url: https://raw.githubusercontent.com/CN-ADLab/SAM4D/main/README.md
+      - label: Project Page
+        url: https://sam4d-project.github.io/
+    dataset_slice:
+      canonical: toy-rgbd-sequence-v0
+      applied: rgbd-breakdance-prompt-v0
+    research_subject: Preserve segmentation prompts over time and across modalities under violent motion.
+    author_packet_targets:
+      - Confirm whether the toy RGBD prototype captures the essential UMPE and MCMA behavior.
+      - Confirm which ablations matter most before attempting full Waymo-4DSeg parity.
+    canonical_targets:
+      - name: temporal_consistency
+        comparator: gte
+        target: 0.72
+        weight: 0.5
+      - name: cross_modal_prompt_transfer
+        comparator: gte
+        target: 0.68
+        weight: 0.5
+    applied_targets:
+      - name: inversion_tracking_stability
+        comparator: gte
+        target: 0.64
+        weight: 0.35
+      - name: cross_modal_prompt_transfer
+        comparator: gte
+        target: 0.68
+        weight: 0.35
+      - name: audio_motion_stability
+        comparator: gte
+        target: 0.70
+        weight: 0.30
+    oracle_cmd:
+      executor: local
+      workdir: .
+      cmd: python -m extreme_motion_reimpl.fixture_runner --fixture fixtures/sam4d_oracle.json
+    reimpl_cmd:
+      executor: local
+      workdir: .
+      cmd: python -m extreme_motion_reimpl.fixture_runner --fixture fixtures/sam4d_reimpl.json
