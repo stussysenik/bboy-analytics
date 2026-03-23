@@ -31,7 +31,7 @@ Cross-video consistency on Red Bull BC One footage (BRACE dataset):
 | neguin | 133 | 0.356 |
 | morris | 120 | 0.538 |
 
-See [EXPERIMENTS.md](EXPERIMENTS.md) for the full experiment journal.
+See [EXPERIMENTS.md](EXPERIMENTS.md) for the full experiment journal and [PROGRESS.md](PROGRESS.md) for the running research log.
 
 ## Pipeline Overview
 
