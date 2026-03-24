@@ -1,5 +1,5 @@
 """
-Video 2: Timelines — Audio stems + Energy + Flow + Running μ + Beat dots.
+Timelines Renderer (v2) — Audio stems + Energy + Flow + Running μ + Beat dots.
 
 Layout (1920x1080):
   Top 432px:    Battle video (scaled)
@@ -10,7 +10,7 @@ Layout (1920x1080):
   Row 5 (30px): Segment color bar + timer
   Bottom 18px:  Legend
 
-Output: experiments/exports/v2/timelines.mp4
+Output: experiments/exports/timelines/
 """
 
 from __future__ import annotations
@@ -268,7 +268,7 @@ def draw_segment_bar(d, y, segments, progress, total_dur):
 
 
 def render(joints_path=None, metrics_path=None, mesh_video_path=None, audio_path=None, output_path=None):
-    output = output_path or str(BASE / "exports/v2/timelines.mp4")
+    output = output_path or str(BASE / "exports/timelines/gvhmr.mp4")
     Path(output).parent.mkdir(parents=True, exist_ok=True)
 
     print("Loading data...")

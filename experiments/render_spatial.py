@@ -1,5 +1,5 @@
 """
-Video 3: Spatial — COM tracking + stage coverage + heatmap.
+Spatial Renderer (v2) — COM tracking + stage coverage + heatmap.
 
 Full 1920x1080. Shows:
 - Battle video with 3 COM trails building up on stage
@@ -8,7 +8,7 @@ Full 1920x1080. Shows:
 - Height profile sidebar
 - Top-down mini map in corner
 
-Output: experiments/exports/v2/spatial.mp4
+Output: experiments/exports/spatial/
 """
 
 from __future__ import annotations
@@ -229,7 +229,7 @@ class SpatialRenderer:
 
 
 def render(joints_path=None, metrics_path=None, mesh_video_path=None, audio_path=None, output_path=None):
-    output = output_path or str(BASE / "exports/v2/spatial.mp4")
+    output = output_path or str(BASE / "exports/spatial/gvhmr.mp4")
     Path(output).parent.mkdir(parents=True, exist_ok=True)
 
     print("Loading data...")

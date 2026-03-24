@@ -1,5 +1,5 @@
 """
-Pitch Renderer: the insight-first split-screen visualization.
+Pitch Renderer (v3) — insight-first split-screen visualization.
 
 Layout:
   ┌────────────────────────┬────────────────────────┐
@@ -118,7 +118,7 @@ def render_pitch(
     vitpose_path: str = "experiments/results/vitpose_2d_seq4.npy",
     original_video: str = "data/brace/videos/RS0mFARO1x4.mp4",
     audio_source: str | None = None,
-    output_path: str = "experiments/results/pitch_v1.mp4",
+    output_path: str = "experiments/exports/pitch/gvhmr.mp4",
     seq_start: int = 3802,
     seq_end: int = 4801,
 ):
@@ -320,7 +320,7 @@ if __name__ == "__main__":
     parser.add_argument("--vitpose", default="experiments/results/vitpose_2d_seq4.npy")
     parser.add_argument("--video", default="data/brace/videos/RS0mFARO1x4.mp4")
     parser.add_argument("--audio", default=None)
-    parser.add_argument("--output", default="experiments/results/pitch_v1.mp4")
+    parser.add_argument("--output", default="experiments/exports/pitch/gvhmr.mp4")
     parser.add_argument("--seq-start", type=int, default=3802)
     parser.add_argument("--seq-end", type=int, default=4801)
     args = parser.parse_args()

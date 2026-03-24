@@ -1,8 +1,14 @@
 """
-v4 Breakdown Renderer — composite analytics for Instagram and landscape.
+Breakdown Renderer (v4) — composite analytics for Instagram and landscape.
 
 Composes existing panels into vertical (1080x1920) and landscape (1920x1080)
 layouts with musicality grading, beat dots, and auto-timestamped exports.
+
+Version history:
+  v1 — render_video.py / render_combined.py (basic overlays)
+  v2 — render_skeleton / render_spatial / render_timelines (core suite)
+  v3 — render_trails / render_pitch / render_worldstate (extended views)
+  v4 — render_breakdown (this file: composite dashboard)
 
 Usage:
     python experiments/render_breakdown.py \
@@ -185,7 +191,7 @@ def save_metadata(output_path: str, ws, layout: str, bpm: float, resolution: str
 
     letter, label, _, pct = grade_mu(ws.mu)
     meta = {
-        "version": "v4",
+        "version": "v4.1",
         "layout": layout,
         "resolution": resolution,
         "frames": ws.frames,
@@ -214,9 +220,9 @@ def render_breakdown(
     beats_path: str | None = None,
     segments_path: str | None = None,
     audio_path: str | None = None,
-    output_dir: str = "experiments/exports/v4",
+    output_dir: str = "experiments/exports/breakdown",
 ):
-    """Render v4 breakdown video."""
+    """Render breakdown video."""
     base = Path(__file__).parent
 
     # Resolve paths
@@ -294,7 +300,7 @@ def render_breakdown(
 
 
 def main():
-    parser = argparse.ArgumentParser(description="v4 Breakdown Renderer")
+    parser = argparse.ArgumentParser(description="Breakdown Renderer (v4)")
     parser.add_argument("--joints", required=True, help="Path to joints_3d.npy")
     parser.add_argument("--video", required=True, help="Path to source video")
     parser.add_argument("--layout", choices=["vertical", "landscape", "both"],
@@ -302,7 +308,7 @@ def main():
     parser.add_argument("--beats", default=None, help="Path to beats.npy")
     parser.add_argument("--segments", default=None, help="Path to segments.json")
     parser.add_argument("--audio", default=None, help="Audio source for muxing")
-    parser.add_argument("--output-dir", default="experiments/exports/v4")
+    parser.add_argument("--output-dir", default="experiments/exports/breakdown")
     args = parser.parse_args()
 
     render_breakdown(

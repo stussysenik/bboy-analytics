@@ -1,5 +1,5 @@
 """
-Video 4 v3: "The Breakdown" — Multi-view ghost trails + simplified analytics.
+Trails Renderer (v3) — Multi-view ghost trails + simplified analytics.
 
 Layout (1920x1080):
   Top 540px:     Battle video (full width) + stats badge + move label
@@ -8,7 +8,7 @@ Layout (1920x1080):
   Row 2 (80px):  Musicality hero stat: X/Y beats hit + dot strip + μ
   Footer (40px): BPM | Duration | Peak velocity | Coverage
 
-Output: experiments/exports/v2/trails.mp4
+Output: experiments/exports/trails/
 """
 
 from __future__ import annotations
@@ -385,7 +385,7 @@ def draw_footer(d, y, bpm, total_dur, peak_vel, total_beats, total_hits, font_sm
 # ── Main render ───────────────────────────────────────────────────
 
 def render(joints_path=None, metrics_path=None, mesh_video_path=None, audio_path=None, output_path=None):
-    output = output_path or str(BASE / "exports/v2/trails.mp4")
+    output = output_path or str(BASE / "exports/trails/gvhmr.mp4")
     Path(output).parent.mkdir(parents=True, exist_ok=True)
 
     print("Loading data...")
@@ -463,7 +463,7 @@ def render(joints_path=None, metrics_path=None, mesh_video_path=None, audio_path
          "-pix_fmt", "yuv420p", "-shortest", "-v", "error", output],
         stdin=subprocess.PIPE, bufsize=W * H * 3 * 2)
 
-    print(f"Rendering {n_frames} frames @ {W}x{H} — v3 'The Breakdown'...")
+    print(f"Rendering {n_frames} frames @ {W}x{H} — Trails...")
     t0 = time.time()
 
     for fi in range(n_frames + 10):
@@ -535,7 +535,7 @@ def render(joints_path=None, metrics_path=None, mesh_video_path=None, audio_path
 
     # Provenance: save timestamped copy
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-    versioned = Path(output).parent / f"trails_v3_{ts}.mp4"
+    versioned = Path(output).parent / f"trails_{ts}.mp4"
     shutil.copy2(output, versioned)
     print(f"Versioned: {versioned}")
 
@@ -544,7 +544,7 @@ def render(joints_path=None, metrics_path=None, mesh_video_path=None, audio_path
 
 if __name__ == "__main__":
     import argparse
-    parser = argparse.ArgumentParser(description="Ghost Trails v3 — The Breakdown")
+    parser = argparse.ArgumentParser(description="Trails Renderer (v3)")
     parser.add_argument("--joints", default=None)
     parser.add_argument("--metrics", default=None)
     parser.add_argument("--mesh-video", default=None)

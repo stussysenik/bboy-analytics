@@ -1,5 +1,5 @@
 """
-Video 1: Skeleton + Joints — Mesh overlay with 6 key joint coordinates + 3 COM centers.
+Skeleton Renderer (v2) — Mesh overlay with 6 key joint coordinates + 3 COM centers.
 
 Full 1920x1080. Shows:
 - GVHMR mesh overlay (from mesh video)
@@ -8,7 +8,7 @@ Full 1920x1080. Shows:
 - Move type label + units legend
 - Coordinate readout panel at bottom
 
-Output: experiments/exports/v2/skeleton_joints.mp4
+Output: experiments/exports/skeleton/
 """
 
 from __future__ import annotations
@@ -227,7 +227,7 @@ class SkeletonRenderer:
 
 
 def render(joints_path=None, metrics_path=None, mesh_video_path=None, audio_path=None, output_path=None):
-    output = output_path or str(BASE / "exports/v2/skeleton_joints.mp4")
+    output = output_path or str(BASE / "exports/skeleton/gvhmr.mp4")
     Path(output).parent.mkdir(parents=True, exist_ok=True)
 
     print("Loading data...")
