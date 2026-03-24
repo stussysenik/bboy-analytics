@@ -35,9 +35,9 @@ runs/
 Thumbs.db
 .idea/
 .vscode/
-.vscode-server/
-.cursor-server/
-.windsurf-server/
+.vscode-server
+.cursor-server
+.windsurf-server
 *.swp
 *.swo
 
