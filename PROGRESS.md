@@ -127,4 +127,65 @@ NVIDIA L4 (23GB), CUDA 12.8, Python 3.12, PyTorch 2.8.0+cu128, Lightning.ai plat
 
 ---
 
+## 2026-03-24 — v4.1 Breakdown Renderer + JOSH Pipeline Fix + Repo Reorganization
+
+### Objective
+
+Build Instagram-ready breakdown videos with 4 orthographic skeleton views, TouchDesigner-style data points, and musicality grading. Fix JOSH inference pipeline. Reorganize repo.
+
+### What Got Built
+
+**v4.1 Breakdown Renderer** (`render_breakdown.py`):
+- Vertical (1080×1920) and landscape (1920×1080) layouts
+- Video panel with TouchDesigner data points: 8 joints + COM with XYZ coords and speed
+- 4 orthographic skeleton views (FRONT/SIDE/BACK/TOP) with cluster-colored wireframe
+- Musicality grade badge (D/C/B/A/S system)
+- Beat dots timeline (green=hit, red=miss) with playhead
+- Energy panel, stats footer with BPM/duration/beat stats
+
+**New Components** (`experiments/components/`):
+- `multi_view.py` — 4-view skeleton with reusable orthographic projection
+- `musicality_grade.py` — letter grade + beat dots panel
+- `video_overlay.py` — enhanced with data points overlay
+- `observatory/` — 8 modules extracted from autoresearch
+
+**Pipeline fixes:**
+- `base.py` — fixed ffmpeg pipe deadlock (terminate reader before wait)
+- JOSH inference — fixed crash on chunks with zero TRAM detections (frames 0-44 have no people)
+
+### JOSH Inference Status
+
+**Root cause of failures:** TRAM tracks only cover frames 45-839. JOSH chunks at frames 0-20 had zero detected humans, causing `RuntimeError: cannot reshape tensor of 0 elements`. Fix committed in josh submodule (commit `5992949`) — skips empty chunks gracefully. Resubmitted as `josh-inference-v5` on L4.
+
+### Repo Changes
+
+- **Renamed** `gvhmr-musicality` → `bboy-analytics` on GitHub
+- **Exports reorganized** from version numbers (v2-v6) to renderer types (breakdown/, skeleton/, spatial/, etc.)
+- **Observatory extracted** from autoresearch to experiments/components/observatory/
+- **.gitignore updated** for josh/, gvhmr/, josh_input/, IDE symlinks, tool artifacts
+- **Autoresearch committed** — observatory deletion + EXTRACTED.md trace
+
+### Known Issues (To Fix Next)
+
+- Energy panel duplicated when no segments provided (MoveBar shows empty)
+- Missing dance phase labels (TOPROCK/FOOTWORK/POWERMOVE/FREEZE) — need segments.json
+- Audio spectral signature missing (lows/mids/highs) — only beat dots shown
+- Musicality grade badge too large — should be more condensed
+- GVHMR data produces D grade (μ=0.0436) — noisy, JOSH should improve
+
+### Commits
+
+```
+7306b2a  chore: fix .gitignore for IDE symlinks
+0edce67  feat: add v4.1 breakdown renderer with multi-view skeleton, data points, and musicality grading
+763fe36  fix: add checkpoint/resume to JOSH pipeline + fix aggregation crash
+834fff8  feat: add JOSH batch pipeline, experiments, and comparison tools
+```
+
+### Environment
+
+NVIDIA L4 (23GB), CUDA 12.8, Python 3.12, PyTorch 2.8.0+cu128, Lightning.ai platform.
+
+---
+
 *End of entry.*
