@@ -46,13 +46,13 @@ MARGIN = 40  # Left/right margin for timelines
 TL_W = W - 2 * MARGIN  # Timeline width
 
 
-def load_all():
+def load_all(joints_path=None, metrics_path=None):
     r = BASE / "results"
-    joints = np.load(r / "joints_3d_CLEAN.npy")
+    joints = np.load(joints_path or (r / "joints_3d_CLEAN.npy"))
     perc = np.load(r / "audio_percussive.npy")
     harm = np.load(r / "audio_harmonic.npy")
 
-    with open(r / "CLEAN_metrics.json") as f:
+    with open(metrics_path or (r / "CLEAN_metrics.json")) as f:
         metrics = json.load(f)
     with open(BASE.parent / "data/brace/annotations/audio_beats.json") as f:
         beats = np.array(json.load(f)["RS0mFARO1x4.4"]["beats_sec"])
@@ -267,13 +267,12 @@ def draw_segment_bar(d, y, segments, progress, total_dur):
         lx += font_sm.getlength(label) + 28
 
 
-def render():
-    out_dir = BASE / "exports/v2"
-    out_dir.mkdir(parents=True, exist_ok=True)
-    output = str(out_dir / "timelines.mp4")
+def render(joints_path=None, metrics_path=None, mesh_video_path=None, audio_path=None, output_path=None):
+    output = output_path or str(BASE / "exports/v2/timelines.mp4")
+    Path(output).parent.mkdir(parents=True, exist_ok=True)
 
     print("Loading data...")
-    joints, perc, harm, metrics, beats, segments = load_all()
+    joints, perc, harm, metrics, beats, segments = load_all(joints_path, metrics_path)
     n_frames = joints.shape[0]
     total_dur = n_frames / FPS
 
@@ -293,7 +292,7 @@ def render():
     beat_hits = compute_beat_alignment(joints, beats, FPS)
 
     # Source video
-    mesh_video = str(BASE / "results/gvhmr_mesh_clean_seq4.mp4")
+    mesh_video = mesh_video_path or str(BASE / "results/gvhmr_mesh_clean_seq4.mp4")
     probe = subprocess.run(["ffprobe", "-v", "quiet", "-print_format", "json",
                            "-show_streams", mesh_video], capture_output=True, text=True)
     vs = [s for s in json.loads(probe.stdout)["streams"] if s["codec_type"] == "video"][0]
@@ -302,7 +301,8 @@ def render():
 
     # Audio
     audio_tmp = tempfile.NamedTemporaryFile(suffix=".aac", delete=False)
-    subprocess.run(["ffmpeg", "-y", "-i", "/tmp/lilg_round.mp4", "-vn", "-c:a", "aac",
+    audio_src = audio_path or "/tmp/lilg_round.mp4"
+    subprocess.run(["ffmpeg", "-y", "-i", audio_src, "-vn", "-c:a", "aac",
                     "-b:a", "192k", audio_tmp.name], capture_output=True)
 
     # FFmpeg pipes
@@ -370,4 +370,14 @@ def render():
 
 
 if __name__ == "__main__":
-    render()
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--joints", default=None)
+    parser.add_argument("--metrics", default=None)
+    parser.add_argument("--mesh-video", default=None)
+    parser.add_argument("--audio", default=None)
+    parser.add_argument("--output", default=None)
+    args = parser.parse_args()
+    render(joints_path=args.joints, metrics_path=args.metrics,
+           mesh_video_path=args.mesh_video, audio_path=args.audio,
+           output_path=args.output)

@@ -1,11 +1,17 @@
 # Separate repos / external clones
 autoresearch/
 gvhmr_src/
+josh/
+gvhmr/
 
 # Data & model weights (large)
 data/brace/
+josh_input/
 **/body_models/
 **/checkpoints/
+
+# Rendered exports (large MP4s)
+experiments/exports/
 
 # Python
 __pycache__/
@@ -46,6 +52,11 @@ Thumbs.db
 .ipython/
 .npm/
 .cache/
+.deno/
+.triton/
+.env.local
+.mcp.json
+.wget-hsts
 
 # Experiment .gitignore patterns
 .gitignore.experiment

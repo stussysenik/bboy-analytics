@@ -29,6 +29,10 @@ IDENTITY_TRACKING_THRESHOLD_M = 0.3
 MUSICALITY_STRONG_THRESHOLD = 0.4
 MUSICALITY_MODERATE_THRESHOLD = 0.2
 
+# Track selection
+TRACK_SEGMENT_MIN_FRAMES = 10
+TRACK_STAGE_RADIUS_M = 4.0
+
 
 def resolve_body_model_path(preferred: str | None = None) -> Path:
     """Resolve body model path with JOSH-first fallback."""

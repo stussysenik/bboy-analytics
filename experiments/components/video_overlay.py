@@ -8,6 +8,19 @@ from PIL import Image, ImageDraw
 from .panel import Panel, FontCache, KEY_JOINTS, C_COM, TXT, TXT_DIM, BG
 
 
+# Labeled data points: (joint_idx, name, label_side, color)
+_DATA_JOINTS = [
+    (15, "HEAD",    "above", (224, 242, 254)),
+    (0,  "PELVIS",  "below", (230, 57, 70)),
+    (1,  "L.HIP",   "left",  (255, 107, 53)),
+    (2,  "R.HIP",   "right", (255, 107, 53)),
+    (20, "L.WRIST", "left",  (168, 85, 247)),
+    (21, "R.WRIST", "right", (168, 85, 247)),
+    (7,  "L.ANKLE", "left",  (255, 107, 53)),
+    (8,  "R.ANKLE", "right", (255, 107, 53)),
+]
+
+
 class VideoOverlay(Panel):
     """Overlay drawn directly on top of the video frame (RGBA)."""
 
@@ -85,6 +98,10 @@ class VideoOverlay(Panel):
             d.text((sx + 10, sy - 8), "COM", fill=(255, 80, 80, 200),
                    font=f(bold=True, size=12))
 
+        # ── TouchDesigner-style data points on skeleton ────────────
+        if frame_idx < ws.frames:
+            self._draw_data_points(d, f, frame_idx)
+
         # ── Coordinate units legend ───────────────────────────────
         d.rounded_rectangle([10, 10, 340, 36], radius=6, fill=(0, 0, 0, 140))
         d.text((20, 14), "Coords: meters | Y=up | GVHMR world frame",
@@ -100,3 +117,95 @@ class VideoOverlay(Panel):
                    fill=(255, 255, 255, 240), font=f(bold=True, size=16))
 
         return img
+
+    def _draw_data_points(self, d: ImageDraw.ImageDraw, f, frame_idx: int):
+        """Draw TouchDesigner-style data points: joint dots + XYZ coords + speed."""
+        ws = self.state
+        joints = ws.joints[frame_idx]  # (22, 3)
+        n_j = joints.shape[0]
+
+        # Orthographic projection: fit skeleton into video center
+        positions = joints[:n_j]
+        center = positions.mean(axis=0)
+        span_x = positions[:, 0].max() - positions[:, 0].min()
+        span_y = positions[:, 1].max() - positions[:, 1].min()
+        max_span = max(span_x, span_y, 0.5)
+        scale = min(self.w, self.h) * 0.6 / max_span
+
+        def proj_2d(pos):
+            sx = self.w // 2 + int((pos[0] - center[0]) * scale)
+            sy = self.h - int(self.h * 0.15 + (pos[1] - center[1]) * scale)
+            return sx, sy
+
+        # Draw skeleton wireframe (subtle)
+        from .panel import BONES
+        for j1, j2 in BONES:
+            if j1 >= n_j or j2 >= n_j:
+                continue
+            p1 = proj_2d(joints[j1])
+            p2 = proj_2d(joints[j2])
+            d.line([p1, p2], fill=(255, 255, 255, 40), width=1)
+
+        lbl_font = f(size=10)
+        coord_font = f(size=9)
+
+        # Draw each labeled joint
+        for ji, name, side, color in _DATA_JOINTS:
+            if ji >= n_j:
+                continue
+            pos = joints[ji]
+            sx, sy = proj_2d(pos)
+
+            # Joint dot
+            r = 5
+            d.ellipse([sx - r, sy - r, sx + r, sy + r],
+                      fill=(*color, 220), outline=(255, 255, 255, 120))
+
+            # Speed
+            speed = 0.0
+            if ws.joint_velocities is not None and frame_idx < ws.frames:
+                speed = float(ws.joint_velocities[frame_idx, ji])
+
+            # Label text
+            coord_text = f"({pos[0]:+.2f}, {pos[1]:+.2f}, {pos[2]:+.2f})"
+            speed_text = f"{speed:.1f} m/s"
+
+            # Compute label position (no overlap)
+            if side == "above":
+                lx, ly = sx - 30, sy - 38
+            elif side == "below":
+                lx, ly = sx - 30, sy + 10
+            elif side == "left":
+                lx, ly = sx - 130, sy - 10
+            elif side == "right":
+                lx, ly = sx + 12, sy - 10
+
+            # Clamp to overlay bounds
+            lx = max(4, min(lx, self.w - 140))
+            ly = max(4, min(ly, self.h - 30))
+
+            # Pill background
+            pill_w = 132
+            pill_h = 26
+            d.rounded_rectangle([lx - 2, ly - 2, lx + pill_w, ly + pill_h],
+                                radius=4, fill=(0, 0, 0, 170))
+
+            # Name + speed on line 1
+            d.text((lx, ly), f"{name} {speed_text}", fill=(*color, 240), font=lbl_font)
+            # Coordinates on line 2
+            d.text((lx, ly + 13), coord_text, fill=(200, 200, 210, 180), font=coord_font)
+
+        # COM star (★) — always most prominent
+        com = ws.com_pos[frame_idx]
+        cx, cy = proj_2d(com)
+        # Gold star
+        d.text((cx - 6, cy - 8), "★", fill=(255, 215, 0, 255), font=f(bold=True, size=16))
+        # COM label
+        com_speed = 0.0
+        if ws.joint_velocities is not None and frame_idx < ws.frames:
+            # COM speed approximated from pelvis velocity
+            com_speed = float(ws.joint_velocities[frame_idx, 0])
+        com_text = f"COM ({com[0]:+.2f}, {com[1]:+.2f}, {com[2]:+.2f}) {com_speed:.1f}m/s"
+        d.rounded_rectangle([cx + 10, cy - 6, cx + 10 + len(com_text) * 6 + 8, cy + 12],
+                            radius=4, fill=(0, 0, 0, 180))
+        d.text((cx + 14, cy - 4), com_text, fill=(255, 215, 0, 255), font=f(bold=True, size=10))

@@ -50,11 +50,14 @@ def compute_mpjpe(pred: np.ndarray, gt: np.ndarray) -> np.ndarray:
     return errors.mean(axis=1) * 1000  # mm
 
 
-def inversion_test(joints: np.ndarray) -> dict:
+def inversion_test(joints: np.ndarray, y_down: bool = False) -> dict:
     """Detect frames where head is below pelvis."""
     head_y = joints[:, HEAD_IDX, 1]
     pelvis_y = joints[:, PELVIS_IDX, 1]
-    inverted = int(np.sum(head_y < pelvis_y))
+    if y_down:
+        inverted = int(np.sum(head_y > pelvis_y))
+    else:
+        inverted = int(np.sum(head_y < pelvis_y))
     return {
         "inverted_frames": inverted,
         "total_frames": len(joints),
@@ -92,7 +95,8 @@ def run_comparison(josh_joints: np.ndarray, gvhmr_joints: np.ndarray, fps: float
     return {
         "mpjpe_mean_mm": round(float(mpjpe.mean()), 1),
         "mpjpe_median_mm": round(float(np.median(mpjpe)), 1),
-        "josh_inversion": inversion_test(josh_joints),
+        # TODO: verify y_down — TRAM pred_trans is Y-up; JOSH SMPL output may be too
+        "josh_inversion": inversion_test(josh_joints, y_down=True),
         "gvhmr_inversion": inversion_test(gvhmr_joints),
         "josh_identity": identity_tracking_test(josh_joints),
         "gvhmr_identity": identity_tracking_test(gvhmr_joints),

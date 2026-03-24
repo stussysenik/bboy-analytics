@@ -66,6 +66,8 @@ def main():
                         help="Path to SMPL body models (default: ~/gvhmr/inputs/checkpoints/body_models)")
     parser.add_argument("--track-id", type=int, default=0,
                         help="Which track to extract (0 = primary dancer)")
+    parser.add_argument("--auto-select", action="store_true",
+                        help="Auto-select best track via displacement analysis (handles identity swaps)")
     args = parser.parse_args()
 
     josh_dir = os.path.expanduser(args.josh_dir)
@@ -76,6 +78,23 @@ def main():
         josh_smpl = os.path.expanduser("~/josh/data/smpl")
         gvhmr_models = os.path.expanduser("~/gvhmr/inputs/checkpoints/body_models")
         body_model_path = josh_smpl if os.path.isdir(josh_smpl) else gvhmr_models
+
+    # ─── Auto-select best track ─────────────────────────────
+    if args.auto_select:
+        tram_dir = os.path.join(josh_dir, "tram")
+        if os.path.isdir(tram_dir):
+            sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
+            from pipeline.track_select import select_best_segments
+            result = select_best_segments(tram_dir)
+            if result["primary_track_id"] is not None:
+                args.track_id = result["primary_track_id"]
+                print(f"  Auto-selected track {args.track_id} "
+                      f"({result['total_clean_frames']} clean frames, "
+                      f"{result['coverage_pct']}% coverage)")
+            else:
+                print("  Auto-select: no clean segments found, falling back to track 0")
+        else:
+            print(f"  Auto-select: no tram/ directory at {tram_dir}, using track {args.track_id}")
 
     # ─── Find JOSH output files ──────────────────────────────
     print("╔══════════════════════════════════════════╗")
@@ -186,9 +205,11 @@ def main():
     max_disp_frame = int(np.argmax(root_displacements))
 
     # Inversion test (head below pelvis)
+    # TODO: verify — TRAM pred_trans is Y-up; JOSH SMPL FK output may also be Y-up
+    # despite RDF camera coords. If so, revert to head_y < pelvis_y.
     head_y = joints_3d[:, 15, 1]   # head joint, y coordinate
     pelvis_y = joints_3d[:, 0, 1]  # pelvis joint, y coordinate
-    inverted_frames = int(np.sum(head_y < pelvis_y))
+    inverted_frames = int(np.sum(head_y > pelvis_y))
 
     metadata = {
         "video": os.path.basename(josh_dir),

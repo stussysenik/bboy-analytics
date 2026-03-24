@@ -36,20 +36,22 @@ LOWER_JOINTS = [1, 2, 4, 5]
 BASE = Path(__file__).parent
 
 
-def load_all():
+def load_all(joints_path=None, metrics_path=None):
     r = BASE / "results"
-    joints = np.load(r / "joints_3d_CLEAN.npy")
-    with open(r / "CLEAN_metrics.json") as f:
+    joints = np.load(joints_path or (r / "joints_3d_CLEAN.npy"))
+    with open(metrics_path or (r / "CLEAN_metrics.json")) as f:
         metrics = json.load(f)
     segments = []
-    with open(BASE.parent / "data/brace/annotations/segments.csv") as f:
-        for row in csv.DictReader(f):
-            if row["video_id"] == "RS0mFARO1x4" and int(row["seq_idx"]) == 4:
-                segments.append({
-                    "start_s": (int(row["start_frame"]) - 3802) / FPS,
-                    "end_s": (int(row["end_frame"]) - 3802) / FPS,
-                    "dance_type": row["dance_type"],
-                })
+    seg_file = BASE.parent / "data/brace/annotations/segments.csv"
+    if seg_file.exists():
+        with open(seg_file) as f:
+            for row in csv.DictReader(f):
+                if row["video_id"] == "RS0mFARO1x4" and int(row["seq_idx"]) == 4:
+                    segments.append({
+                        "start_s": (int(row["start_frame"]) - 3802) / FPS,
+                        "end_s": (int(row["end_frame"]) - 3802) / FPS,
+                        "dance_type": row["dance_type"],
+                    })
     return joints, metrics, segments
 
 
@@ -226,18 +228,17 @@ class SpatialRenderer:
         return canvas
 
 
-def render():
-    out_dir = BASE / "exports/v2"
-    out_dir.mkdir(parents=True, exist_ok=True)
-    output = str(out_dir / "spatial.mp4")
+def render(joints_path=None, metrics_path=None, mesh_video_path=None, audio_path=None, output_path=None):
+    output = output_path or str(BASE / "exports/v2/spatial.mp4")
+    Path(output).parent.mkdir(parents=True, exist_ok=True)
 
     print("Loading data...")
-    joints, metrics, segments = load_all()
+    joints, metrics, segments = load_all(joints_path, metrics_path)
     n_frames = joints.shape[0]
 
     renderer = SpatialRenderer(joints, metrics, segments)
 
-    mesh_video = str(BASE / "results/gvhmr_mesh_clean_seq4.mp4")
+    mesh_video = mesh_video_path or str(BASE / "results/gvhmr_mesh_clean_seq4.mp4")
     probe = subprocess.run(["ffprobe", "-v", "quiet", "-print_format", "json",
                            "-show_streams", mesh_video], capture_output=True, text=True)
     vs = [s for s in json.loads(probe.stdout)["streams"] if s["codec_type"] == "video"][0]
@@ -245,7 +246,8 @@ def render():
     src_bytes = src_w * src_h * 3
 
     audio_tmp = tempfile.NamedTemporaryFile(suffix=".aac", delete=False)
-    subprocess.run(["ffmpeg", "-y", "-i", "/tmp/lilg_round.mp4", "-vn", "-c:a", "aac",
+    audio_src = audio_path or "/tmp/lilg_round.mp4"
+    subprocess.run(["ffmpeg", "-y", "-i", audio_src, "-vn", "-c:a", "aac",
                     "-b:a", "192k", audio_tmp.name], capture_output=True)
 
     read_proc = subprocess.Popen(
@@ -285,4 +287,14 @@ def render():
 
 
 if __name__ == "__main__":
-    render()
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--joints", default=None)
+    parser.add_argument("--metrics", default=None)
+    parser.add_argument("--mesh-video", default=None)
+    parser.add_argument("--audio", default=None)
+    parser.add_argument("--output", default=None)
+    args = parser.parse_args()
+    render(joints_path=args.joints, metrics_path=args.metrics,
+           mesh_video_path=args.mesh_video, audio_path=args.audio,
+           output_path=args.output)

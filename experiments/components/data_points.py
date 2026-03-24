@@ -48,7 +48,7 @@ class DataPointsPanel(Panel):
 
             # Velocity bar
             vel_norm = min(1.0, vel_mag / 5.0)  # normalize to ~5 m/s max
-            bar_w = int(vel_norm * 60)
+            bar_w = max(0, int(vel_norm * 60))
             bar_y = py + 1
             d.rectangle([px + 80, bar_y, px + 80 + bar_w, bar_y + 8],
                         fill=(*color[:2], min(255, color[2] + 80)))

@@ -100,11 +100,11 @@ def compute_mpjpe(joints_a: np.ndarray, joints_b: np.ndarray) -> np.ndarray:
     return errors.mean(axis=1) * 1000  # (F,) in mm
 
 
-def inversion_test(joints: np.ndarray, model_name: str) -> dict:
+def inversion_test(joints: np.ndarray, model_name: str, y_down: bool = False) -> dict:
     """Test whether the model detects inversions (head below pelvis)."""
     head_y = joints[:, 15, 1]   # head joint index 15
     pelvis_y = joints[:, 0, 1]  # pelvis joint index 0
-    inverted = head_y < pelvis_y
+    inverted = head_y > pelvis_y if y_down else head_y < pelvis_y
 
     return {
         "model": model_name,
@@ -216,7 +216,8 @@ def main():
     # ─── Inversion test ──────────────────────────────────────
     print("\n▸ Inversion test (head below pelvis)...")
     inv_gvhmr = inversion_test(gvhmr, "GVHMR")
-    inv_josh = inversion_test(josh, "JOSH")  # Use unaligned for inversion test
+    # TODO: verify y_down — TRAM pred_trans is Y-up; JOSH SMPL output may be too
+    inv_josh = inversion_test(josh, "JOSH", y_down=True)
     print(f"  GVHMR: {inv_gvhmr['inverted_frames']}/{inv_gvhmr['total_frames']} "
           f"({inv_gvhmr['inverted_fraction']*100:.1f}%) inverted")
     print(f"  JOSH:  {inv_josh['inverted_frames']}/{inv_josh['total_frames']} "

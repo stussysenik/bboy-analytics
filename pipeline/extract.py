@@ -33,7 +33,7 @@ def _load_body_model(body_model_path: str, n_frames: int, prefer: str = "smpl"):
     raise RuntimeError("unreachable")
 
 
-def _compute_stats(joints_3d: np.ndarray, fps: float) -> dict:
+def _compute_stats(joints_3d: np.ndarray, fps: float, y_down: bool = False) -> dict:
     """Compute velocity, displacement, and inversion stats."""
     velocities = np.diff(joints_3d, axis=0)
     speeds = np.linalg.norm(velocities, axis=-1)
@@ -42,7 +42,12 @@ def _compute_stats(joints_3d: np.ndarray, fps: float) -> dict:
     max_disp = float(np.max(root_displacements))
     head_y = joints_3d[:, HEAD_IDX, 1]
     pelvis_y = joints_3d[:, PELVIS_IDX, 1]
-    inverted = int(np.sum(head_y < pelvis_y))
+    if y_down:
+        # RDF: Y points down, head_y > pelvis_y means head is below pelvis
+        inverted = int(np.sum(head_y > pelvis_y))
+    else:
+        # Y-up: head_y < pelvis_y means head is below pelvis
+        inverted = int(np.sum(head_y < pelvis_y))
     n = joints_3d.shape[0]
     return {
         "mean_speed_m_per_frame": float(np.mean(speeds)),
@@ -112,7 +117,9 @@ def extract_josh_joints(
         )
 
     joints_3d = output.joints[:, :SMPL_JOINT_COUNT, :].numpy()
-    stats = _compute_stats(joints_3d, fps)
+    # TODO: verify y_down when JOSH joints_3d syncs — TRAM pred_trans is Y-up,
+    # so SMPL FK output may also be Y-up despite JOSH's RDF camera coords
+    stats = _compute_stats(joints_3d, fps, y_down=True)
 
     metadata = {
         "source": os.path.basename(josh_dir),

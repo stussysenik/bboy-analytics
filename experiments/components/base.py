@@ -132,6 +132,7 @@ class RendererBase:
 
         write_proc.stdin.close()
         write_proc.wait()
+        read_proc.terminate()
         read_proc.wait()
 
         if audio_tmp:
