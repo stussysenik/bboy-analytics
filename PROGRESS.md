@@ -29,10 +29,11 @@
 | Diagnostic baseline | GVHMR |
 | Ground truth source | BRACE annotations |
 | Current best evidence | Clean validated JOSH footwork window on `bcone_seq4` frames `780–824`, plus a focused powermove report showing the current powermove candidate is only `23` frames and loses to GVHMR on BRACE 2D |
+| Current layered verdict | Application-layer bug: no. Extraction primary cause on the surviving slice: no. Dominant blocker: systematic JOSH placement/scale failure, with residual pose failure and no viable 45-frame window yet |
 | Current renderability | `window_ready`, not `full_clip_ready` |
 | Proven | Dense JOSH extraction, validation gating, BRACE-aware rendering, JOSH-vs-GVHMR side-by-side comparison, one-window BRACE 2D benchmark, focused powermove failure attribution |
 | Unproven | Full-round JOSH stability, broad powermove superiority, multi-sequence BRACE 2D benchmark |
-| Immediate next gate | Improve or replace JOSH on the surviving powermove candidate before more expensive reruns |
+| Immediate next gate | Improve JOSH camera-relative placement/scale on `530–553` before any rerun; only then re-evaluate pose quality and segment viability |
 
 ## Research Evolution
 
@@ -68,11 +69,11 @@ Move the powermove discussion from speculation to a concrete segment-level diagn
 
 ### Outputs Produced
 
-- `experiments/results/powermove_debug/bcone_seq4/RS0mFARO1x4_seq4/RS0mFARO1x4.4332.4423/powermove_report.json`
-- `experiments/results/powermove_debug/bcone_seq4/RS0mFARO1x4_seq4/RS0mFARO1x4.4332.4423/powermove_report.md`
-- `experiments/results/powermove_debug/bcone_seq4/RS0mFARO1x4_seq4/RS0mFARO1x4.4332.4423/candidate_windows.csv`
-- `experiments/results/powermove_debug/bcone_seq4/RS0mFARO1x4_seq4/RS0mFARO1x4.4332.4423/frame_diagnostics.csv`
-- `experiments/results/powermove_debug/bcone_seq4/RS0mFARO1x4_seq4/RS0mFARO1x4.4332.4423/renders/comparison_landscape_530_553.mp4`
+- `experiments/results/powermove_debug/bcone_seq4/RS0mFARO1x4.4332.4423/powermove_report.json`
+- `experiments/results/powermove_debug/bcone_seq4/RS0mFARO1x4.4332.4423/powermove_report.md`
+- `experiments/results/powermove_debug/bcone_seq4/RS0mFARO1x4.4332.4423/candidate_windows.csv`
+- `experiments/results/powermove_debug/bcone_seq4/RS0mFARO1x4.4332.4423/frame_diagnostics.csv`
+- `experiments/results/powermove_debug/bcone_seq4/RS0mFARO1x4.4332.4423/renders/comparison_landscape_530_553.mp4`
 
 ### Result
 
@@ -83,7 +84,7 @@ Move the powermove discussion from speculation to a concrete segment-level diagn
 - Frames short of benchmark gate: `22`
 - Source track ids in valid region: `[1]`
 - BRACE 2D overlap: full segment available locally (`manual+interpolated`)
-- Primary bottleneck: `coverage_and_pose_quality`
+- Primary bottleneck: `systematic placement/scale failure`, with residual pose failure and only `23` valid frames
 
 On the best available candidate window `530–553`:
 
@@ -103,6 +104,20 @@ This is the first point where the repo can say something precise about a hard po
 ### Next Gate
 
 Use the `530–553` candidate strip and report to decide whether local JOSH tuning can materially improve the powermove slice. If not, test a stronger prior before escalating to richer capture.
+
+### Layered Gate Output
+
+The repo now also has a unified layered gate report for this same slice:
+
+- `experiments/results/powermove_debug/bcone_seq4/RS0mFARO1x4.4332.4423/gates_report.md`
+
+Current gate verdict:
+
+- application layer falsified
+- extraction not primary on the surviving slice
+- placement failed
+- residual pose failed
+- segment viability failed
 
 ---
 

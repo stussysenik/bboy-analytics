@@ -51,6 +51,7 @@ The repo is no longer treating GVHMR as the main answer. The current engineering
 - `fetch_brace_assets.py` downloads BRACE manual/interpolated keypoints for local benchmarking.
 - `export_josh_2d.py` projects dense JOSH joints into full-frame COCO-17 coordinates for BRACE 2D evaluation.
 - `powermove_debug_report.py` produces a focused BRACE-segment report with candidate-window tables, BRACE 2D comparisons, and optional review renders for failing powermoves.
+- `evaluate_powermove_gates.py` turns the current diagnostics and root-cause signals into one layered no-rerun gate verdict.
 
 ## Scoring Model
 
@@ -90,6 +91,7 @@ Video → Track/Scene (TRAM + DECO + JOSH)
 | Segment scoring | Are BRACE semantics wired into the render path? | Yes |
 | Objective benchmark | Can we quantify JOSH vs GVHMR per segment/window? | Yes for `bcone_seq4`; manual+interpolated BRACE 2D is now local and the validated footwork window favors JOSH |
 | Powermove attribution | Do we know why the current powermove segment fails? | Yes for `bcone_seq4`: the surviving `530–553` JOSH slice is only 23 frames and still loses to GVHMR on BRACE 2D |
+| Layered no-rerun gates | Can we say whether the blocker is app-layer, extraction, placement, pose, or viability? | Yes for `bcone_seq4`: application is falsified, extraction is not primary, placement fails, pose fails, and the segment is still not viable |
 
 ## Project Structure
 
@@ -209,6 +211,19 @@ python experiments/powermove_debug_report.py \
   --audio josh_input/bcone_seq4/audio.wav \
   --render-top-k 1
 
+python experiments/evaluate_powermove_gates.py \
+  --josh-joints josh_input/bcone_seq4/joints_3d_josh.npy \
+  --josh-meta josh_input/bcone_seq4/joints_3d_josh_metadata.json \
+  --gvhmr-joints experiments/results/joints_3d_REAL_seq4.npy \
+  --baseline-2d experiments/results/vitpose_2d_seq4.npy \
+  --camera-k experiments/results/camera_K_seq4.npy \
+  --video-id RS0mFARO1x4 \
+  --seq-idx 4 \
+  --sequence-name bcone_seq4 \
+  --segment-uid RS0mFARO1x4.4332.4423 \
+  --control-start 780 \
+  --control-end 825
+
 # Individual renderers
 python experiments/render_skeleton.py --joints ... --mesh-video ...
 python experiments/render_spatial.py --joints ... --metrics ... --mesh-video ...
@@ -229,6 +244,7 @@ Key active research artifacts:
 - [experiments/josh_powermove_decision_framework.md](experiments/josh_powermove_decision_framework.md) — next-stage experiment logic: JOSH stabilization, BRACE benchmarking, HSMR/SKEL role, and when to escalate to sensor-rich capture
 - [experiments/results/benchmarks/bcone_seq4/benchmark.md](experiments/results/benchmarks/bcone_seq4/benchmark.md) — current BRACE 2D-backed benchmark report for `bcone_seq4`
 - [experiments/bcone_seq4_powermove_findings.md](experiments/bcone_seq4_powermove_findings.md) — tracked summary of the current powermove failure-attribution pass and the local artifact paths
+- [experiments/results/powermove_debug/bcone_seq4/RS0mFARO1x4.4332.4423/gates_report.md](experiments/results/powermove_debug/bcone_seq4/RS0mFARO1x4.4332.4423/gates_report.md) — layered no-rerun gate verdict for the current powermove control slice
 
 ## Environment
 

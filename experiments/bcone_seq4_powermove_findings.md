@@ -12,7 +12,7 @@ The current powermove target is BRACE segment `RS0mFARO1x4.4332.4423` on `bcone_
 - Longest contiguous JOSH run: `23` frames (`530–553`)
 - Frames short of the `45`-frame benchmark gate: `22`
 - BRACE 2D overlap: available locally across the segment (`manual+interpolated`)
-- Current diagnosis: `coverage_and_pose_quality`
+- Current diagnosis: `systematic_model_placement_failure` on the surviving slice, with residual pose failure and a `23`-frame viability cap
 
 The key result is that the current blocker is no longer ambiguous:
 
@@ -62,6 +62,26 @@ So the current powermove failure is best described as:
 
 This makes the next no-rerun experiment precise: inspect and improve the JOSH camera-relative placement around frames `530–553` before paying for broader reruns.
 
+## Layered Gates Verdict
+
+The layered no-rerun gate pass turns the current evidence into one explicit decision path:
+
+- `G1_application`: pass
+- `G2_extraction`: pass on the surviving slice
+- `G3_placement`: fail
+- `G4_pose`: fail
+- `G5_segment_viability`: fail
+
+Final classification: `systematic_model_placement_failure`
+
+This means:
+
+- do **not** spend on a broad rerun yet
+- do **not** blame the evaluator first
+- do **not** treat extraction as the lead cause on the surviving slice
+- do target JOSH camera-relative placement/scale on `530–553` first
+- then re-check residual pose and only then ask about viability / reruns
+
 ## Canonical Artifacts
 
 - Report: `experiments/results/powermove_debug/bcone_seq4/RS0mFARO1x4.4332.4423/powermove_report.md`
@@ -69,6 +89,7 @@ This makes the next no-rerun experiment precise: inspect and improve the JOSH ca
 - Candidate table: `experiments/results/powermove_debug/bcone_seq4/RS0mFARO1x4.4332.4423/candidate_windows.csv`
 - Frame diagnostics: `experiments/results/powermove_debug/bcone_seq4/RS0mFARO1x4.4332.4423/frame_diagnostics.csv`
 - Root-cause analysis: `experiments/results/powermove_debug/bcone_seq4/RS0mFARO1x4.4332.4423/root_cause_report.md`
+- Layered gates verdict: `experiments/results/powermove_debug/bcone_seq4/RS0mFARO1x4.4332.4423/gates_report.md`
 - Review render: `experiments/results/powermove_debug/bcone_seq4/RS0mFARO1x4.4332.4423/renders/comparison_landscape_530_553.mp4`
 
 ## Interpretation
