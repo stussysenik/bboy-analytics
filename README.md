@@ -125,7 +125,7 @@ Video → Track/Scene (TRAM + DECO + JOSH)
 │       ├── worldstate/            #     Top-down view
 │   └── results/                   #   Derived data artifacts
 │       ├── benchmarks/            #     Segment-class benchmark reports
-│       └── powermove_diagnostics/ #     Focused failing-segment diagnostics
+│       └── powermove_debug/       #     Focused powermove diagnostics
 ├── pipeline/                      # Batch data processing
 │   ├── extract.py                 #   GVHMR/JOSH → joints .npy
 │   ├── compare.py                 #   GVHMR vs JOSH comparison

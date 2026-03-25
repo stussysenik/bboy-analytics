@@ -64,13 +64,15 @@ Move the powermove discussion from speculation to a concrete segment-level diagn
 - Added tests for short-window and mixed coverage/pose-quality failure cases.
 - Added a tracked research note:
   - `experiments/bcone_seq4_powermove_findings.md`
+- Added a short-window renderer regression fix so 23-frame diagnostic strips can render without crashing the world-state pass.
 
 ### Outputs Produced
 
-- `experiments/results/powermove_diagnostics/bcone_seq4/RS0mFARO1x4.4332.4423/powermove_report.json`
-- `experiments/results/powermove_diagnostics/bcone_seq4/RS0mFARO1x4.4332.4423/powermove_report.md`
-- `experiments/results/powermove_diagnostics/bcone_seq4/RS0mFARO1x4.4332.4423/candidate_windows.csv`
-- `experiments/results/powermove_diagnostics/bcone_seq4/RS0mFARO1x4.4332.4423/renders/comparison_landscape_530_553.mp4`
+- `experiments/results/powermove_debug/bcone_seq4/powermove_report.json`
+- `experiments/results/powermove_debug/bcone_seq4/powermove_report.md`
+- `experiments/results/powermove_debug/bcone_seq4/candidate_windows.csv`
+- `experiments/results/powermove_debug/bcone_seq4/frame_diagnostics.csv`
+- `experiments/results/powermove_debug/bcone_seq4/renders/comparison_landscape_530_553.mp4`
 
 ### Result
 
@@ -96,6 +98,7 @@ This is the first point where the repo can say something precise about a hard po
 - the issue is not just “no long window”
 - the surviving short JOSH slice is also objectively wrong relative to BRACE 2D
 - so the next step is not a blind rerun; it is local tuning or stronger-prior testing against this exact slice
+- and the short diagnostic strip is now renderable locally, so visual review is no longer blocked by clip length
 
 ### Next Gate
 

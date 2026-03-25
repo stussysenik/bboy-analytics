@@ -49,7 +49,7 @@
 | `person_lock.py` | 4.1K | Person locking: segments `joints_3d_REAL.npy` into contiguous detection windows (produces `locked/` segments) |
 | `extract_2d.py` | 4.0K | Extracts 2D pose data (vitpose, bounding boxes, camera intrinsics) from GVHMR results into standalone numpy arrays |
 | `benchmark_josh_brace.py` | 9.5K | BRACE-aligned JOSH vs GVHMR benchmark CLI. Emits `benchmark.json`, `benchmark.md`, and `windows.csv` for evaluated sequences. |
-| `powermove_debug_report.py` | 8.8K | Focused BRACE segment diagnostics CLI for failing powermoves. Emits a report, candidate-window CSV, and optional review renders. |
+| `powermove_debug_report.py` | 8.8K | Focused BRACE segment diagnostics CLI for failing powermoves. Emits a report, candidate-window CSV, frame diagnostics, and optional review renders. |
 | `fetch_brace_assets.py` | 2.1K | Downloads and extracts BRACE manual/interpolated keypoints or audio features, optionally filtered to one video. |
 | `export_josh_2d.py` | 0.9K | Projects dense JOSH joints into full-frame COCO-17 image coordinates for BRACE 2D benchmarking. |
 

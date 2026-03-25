@@ -130,6 +130,19 @@ def _frame_overlap_count(frames: dict[int, np.ndarray], start: int, end_exclusiv
     return sum(1 for frame in frames if start <= frame < end_exclusive)
 
 
+def _interpolated_only_overlap_count(
+    manual_frames: dict[int, np.ndarray],
+    interpolated_frames: dict[int, np.ndarray],
+    start: int,
+    end_exclusive: int,
+) -> int:
+    manual_ids = {frame for frame in manual_frames if start <= frame < end_exclusive}
+    return sum(
+        1 for frame in interpolated_frames
+        if start <= frame < end_exclusive and frame not in manual_ids
+    )
+
+
 def _track_ids_for_slice(
     source_track_ids: np.ndarray | None,
     valid_mask: np.ndarray,
@@ -208,13 +221,19 @@ def _candidate_window_report(
         "global_start_frame": int(sequence.start_frame + start),
         "global_end_frame_exclusive": int(sequence.start_frame + end),
         "segment_frame_offset_start": int(start - segment.local_start_frame),
-        "segment_frame_offset_end_exclusive": int(end - segment.local_end_frame_exclusive),
+        "segment_frame_offset_end_exclusive": int(end - segment.local_start_frame),
         "frames_short_of_benchmark_gate": max(0, min_window_frames - (end - start)),
         "is_benchmarkable": bool((end - start) >= min_window_frames),
         "source_track_ids": _track_ids_for_slice(source_track_ids, josh_valid_mask, start, end),
         "gt_status": window_gt_status,
         "manual_gt_frames": _frame_overlap_count(manual_gt_frames, start, end),
         "interpolated_gt_frames": _frame_overlap_count(interpolated_gt_frames, start, end),
+        "interpolated_only_gt_frames": _interpolated_only_overlap_count(
+            manual_gt_frames,
+            interpolated_gt_frames,
+            start,
+            end,
+        ),
         "josh": josh_summary,
         "gvhmr": gvhmr_summary,
         "comparison": comparison,
@@ -260,6 +279,24 @@ def build_segment_diagnostics_report(
     if source_track_ids is not None and source_track_ids.shape[0] != josh_joints.shape[0]:
         raise ValueError(
             f"Expected JOSH source track ids to have {josh_joints.shape[0]} frames, got {source_track_ids.shape[0]}"
+        )
+    if segment.local_start_frame < 0 or segment.local_end_frame_exclusive > josh_joints.shape[0]:
+        raise ValueError(
+            f"Segment {segment.uid} is out of bounds for the {josh_joints.shape[0]}-frame local clip: "
+            f"{segment.local_start_frame}:{segment.local_end_frame_exclusive}"
+        )
+    if segment.local_end_frame_exclusive <= segment.local_start_frame:
+        raise ValueError(
+            f"Segment {segment.uid} has invalid local bounds: "
+            f"{segment.local_start_frame}:{segment.local_end_frame_exclusive}"
+        )
+    if josh_2d is not None and josh_2d.shape[0] != josh_joints.shape[0]:
+        raise ValueError(
+            f"Expected JOSH 2D to have {josh_joints.shape[0]} frames, got {josh_2d.shape[0]}"
+        )
+    if gvhmr_2d is not None and gvhmr_2d.shape[0] != gvhmr_joints.shape[0]:
+        raise ValueError(
+            f"Expected baseline 2D to have {gvhmr_joints.shape[0]} frames, got {gvhmr_2d.shape[0]}"
         )
 
     _, josh_windows = load_josh_windows_from_meta(josh_meta)
@@ -322,6 +359,12 @@ def build_segment_diagnostics_report(
         segment.local_start_frame,
         segment.local_end_frame_exclusive,
     )
+    interpolated_only_segment_frames = _interpolated_only_overlap_count(
+        manual_gt_frames,
+        interpolated_gt_frames,
+        segment.local_start_frame,
+        segment.local_end_frame_exclusive,
+    )
     merged_segment_frames = _frame_overlap_count(
         gt_frames,
         segment.local_start_frame,
@@ -339,7 +382,7 @@ def build_segment_diagnostics_report(
         notes.append(
             "BRACE 2D overlap exists locally on "
             f"{merged_segment_frames} segment frames "
-            f"({manual_segment_frames} manual, {interpolated_segment_frames} interpolated)."
+            f"({manual_segment_frames} manual, {interpolated_only_segment_frames} interpolated-only)."
         )
     else:
         notes.append("No BRACE 2D overlap exists for this segment locally.")
@@ -366,8 +409,8 @@ def build_segment_diagnostics_report(
     elif best_candidate and _josh_loses_2d(best_candidate):
         primary_bottleneck = "coverage_and_pose_quality"
         notes.append(
-            "On the best available candidate window, JOSH is objectively worse than GVHMR on BRACE 2D, "
-            "so the blocker is not coverage alone."
+            "On the best available candidate window, JOSH is objectively worse than the current baseline 2D path "
+            "on BRACE 2D, so the blocker is not coverage alone."
         )
         next_actions = [
             "Inspect the short candidate strip and its 2D reprojection before scheduling a full rerun.",
@@ -412,6 +455,7 @@ def build_segment_diagnostics_report(
             "segment_frames_available": merged_segment_frames,
             "segment_manual_frames": manual_segment_frames,
             "segment_interpolated_frames": interpolated_segment_frames,
+            "segment_interpolated_only_frames": interpolated_only_segment_frames,
         },
         "segment_summary": {
             "josh_valid_coverage_pct": coverage_pct,
@@ -585,6 +629,7 @@ def write_diagnostics_outputs(report: dict[str, Any], output_dir: str | Path) ->
         "gt_status",
         "manual_gt_frames",
         "interpolated_gt_frames",
+        "interpolated_only_gt_frames",
         "is_benchmarkable",
         "frames_short_of_benchmark_gate",
         "josh_renderability",
@@ -610,6 +655,7 @@ def write_diagnostics_outputs(report: dict[str, Any], output_dir: str | Path) ->
                     "gt_status": candidate["gt_status"],
                     "manual_gt_frames": candidate["manual_gt_frames"],
                     "interpolated_gt_frames": candidate["interpolated_gt_frames"],
+                    "interpolated_only_gt_frames": candidate["interpolated_only_gt_frames"],
                     "is_benchmarkable": candidate["is_benchmarkable"],
                     "frames_short_of_benchmark_gate": candidate["frames_short_of_benchmark_gate"],
                     "josh_renderability": candidate["josh"]["renderability"],

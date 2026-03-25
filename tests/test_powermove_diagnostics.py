@@ -133,6 +133,7 @@ def test_build_segment_diagnostics_report_flags_frames_short_of_gate():
     assert len(report["candidate_windows"]) == 1
     assert report["candidate_windows"][0]["frames_short_of_benchmark_gate"] == 5
     assert report["candidate_windows"][0]["source_track_ids"] == [7]
+    assert report["candidate_windows"][0]["segment_frame_offset_end_exclusive"] == 20
     assert not report["candidate_windows"][0]["is_benchmarkable"]
     assert len(report["frame_diagnostics"]) == 40
     assert report["frame_diagnostics"][5]["local_frame"] == 35
@@ -210,7 +211,9 @@ def test_build_powermove_report_flags_mixed_coverage_and_pose_quality_failure():
 
     assert report["diagnosis"]["primary_bottleneck"] == "coverage_and_pose_quality"
     assert report["segment_summary"]["frames_short_of_benchmark_gate"] == 22
-    assert "objectively worse than GVHMR on BRACE 2D" in " ".join(report["diagnosis"]["notes"])
+    assert report["ground_truth_2d"]["segment_manual_frames"] == 23
+    assert report["ground_truth_2d"]["segment_interpolated_only_frames"] == 0
+    assert "objectively worse than the current baseline 2D path" in " ".join(report["diagnosis"]["notes"])
 
 
 def test_render_markdown_report_mentions_primary_bottleneck():
@@ -297,3 +300,52 @@ def test_build_window_ladder_counts_threshold_survivors():
         {"min_frames": 24, "candidate_count": 0, "best_n_frames": 0},
         {"min_frames": 45, "candidate_count": 0, "best_n_frames": 0},
     ]
+
+
+def test_build_segment_diagnostics_report_rejects_out_of_bounds_segment():
+    sequence = BraceSequence(
+        video_id="vid",
+        seq_idx=1,
+        start_frame=100,
+        end_frame_exclusive=160,
+        dancer="tester",
+        dancer_id=1,
+        year=2011,
+        uid="vid.1",
+    )
+    segment = BraceSegment(
+        uid="bad-seg",
+        dance_type="powermove",
+        dancer="tester",
+        year=2011,
+        global_start_frame=150,
+        global_end_frame_exclusive=220,
+        local_start_frame=50,
+        local_end_frame_exclusive=120,
+    )
+    joints = _stable_joints(60)
+    valid_mask = np.ones(60, dtype=bool)
+    meta = {
+        "fps": 30.0,
+        "stats": {
+            "renderability": "window_ready",
+            "recommended_windows": [],
+            "windows": [{"start_frame": 0, "end_frame": 59, "n_frames": 60}],
+        },
+    }
+
+    try:
+        build_segment_diagnostics_report(
+            josh_joints=joints,
+            josh_meta=meta,
+            josh_valid_mask=valid_mask,
+            gvhmr_joints=joints.copy(),
+            sequence=sequence,
+            segment=segment,
+            shot_boundaries=[],
+            fps=30.0,
+        )
+    except ValueError as exc:
+        assert "out of bounds" in str(exc)
+    else:
+        raise AssertionError("Expected out-of-bounds segment to be rejected")

@@ -49,12 +49,36 @@ def _segment_interpolated_json(brace_dir: Path, year: int, video_id: str, global
     return None
 
 
+def _stack_videos(left: str, right: str, output_path: str) -> None:
+    subprocess.run(
+        [
+            "ffmpeg",
+            "-y",
+            "-i",
+            left,
+            "-i",
+            right,
+            "-filter_complex",
+            "hstack=inputs=2",
+            "-c:v",
+            "libx264",
+            "-preset",
+            "medium",
+            "-crf",
+            "20",
+            "-pix_fmt",
+            "yuv420p",
+            output_path,
+        ],
+        check=True,
+        capture_output=True,
+    )
+
+
 def _render_candidate(
     *,
-    repo_root: Path,
     output_dir: Path,
     josh_joints: str,
-    josh_meta: str,
     gvhmr_joints: str,
     video: str,
     beats: str | None,
@@ -64,39 +88,43 @@ def _render_candidate(
     candidate: dict,
     layout: str,
 ) -> str:
+    from render_breakdown import render_breakdown
+
     output_dir.mkdir(parents=True, exist_ok=True)
-    cmd = [
-        "python3",
-        "experiments/render_model_comparison.py",
-        "--josh-joints",
-        josh_joints,
-        "--josh-meta",
-        josh_meta,
-        "--gvhmr-joints",
-        gvhmr_joints,
-        "--video",
-        video,
-        "--layout",
-        layout,
-        "--output-dir",
-        str(output_dir),
-        "--brace-video-id",
-        brace_video_id,
-        "--brace-start-frame",
-        str(brace_start_frame),
-        "--window-start-frame",
-        str(candidate["local_start_frame"]),
-        "--window-end-frame",
-        str(candidate["local_end_frame_exclusive"]),
-    ]
-    if beats is not None:
-        cmd.extend(["--beats", beats])
-    if audio is not None:
-        cmd.extend(["--audio", audio])
-    subprocess.run(cmd, check=True, cwd=repo_root)
-    return str(
-        output_dir / f"comparison_{layout}_{candidate['local_start_frame']}_{candidate['local_end_frame_exclusive']}.mp4"
+    start = int(candidate["local_start_frame"])
+    end = int(candidate["local_end_frame_exclusive"])
+    josh_dir = output_dir / "_josh"
+    gvhmr_dir = output_dir / "_gvhmr"
+    josh_dir.mkdir(parents=True, exist_ok=True)
+    gvhmr_dir.mkdir(parents=True, exist_ok=True)
+
+    josh_outputs = render_breakdown(
+        joints_path=josh_joints,
+        video_path=video,
+        layout=layout,
+        beats_path=beats,
+        audio_path=audio,
+        output_dir=str(josh_dir),
+        brace_video_id=brace_video_id,
+        brace_start_frame=brace_start_frame,
+        window_start_frame=start,
+        window_end_frame=end,
     )
+    gvhmr_outputs = render_breakdown(
+        joints_path=gvhmr_joints,
+        video_path=video,
+        layout=layout,
+        beats_path=beats,
+        audio_path=audio,
+        output_dir=str(gvhmr_dir),
+        brace_video_id=brace_video_id,
+        brace_start_frame=brace_start_frame,
+        window_start_frame=start,
+        window_end_frame=end,
+    )
+    comparison_path = output_dir / f"comparison_{layout}_{start}_{end}.mp4"
+    _stack_videos(josh_outputs[0], gvhmr_outputs[0], str(comparison_path))
+    return str(comparison_path)
 
 
 def main() -> None:
@@ -217,10 +245,8 @@ def main() -> None:
         render_root = out_dir / "renders"
         for candidate in report["candidate_windows"][: args.render_top_k]:
             render_path = _render_candidate(
-                repo_root=repo_root,
                 output_dir=render_root,
                 josh_joints=args.josh_joints,
-                josh_meta=args.josh_meta,
                 gvhmr_joints=args.gvhmr_joints,
                 video=args.video,
                 beats=_auto_optional_path(args.beats),
