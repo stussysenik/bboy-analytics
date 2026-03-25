@@ -4,7 +4,7 @@
 **Purpose**: Derived outputs for both the older musicality experiments and the current JOSH-first validation path: 3D joints, audio features, benchmark reports, metrics, and render-ready artifacts.
 **Total size**: ~199 MB
 
-**Current operational state**: `bcone_seq4` is `window_ready`, not `full_clip_ready`. The newest benchmark artifacts live under `benchmarks/bcone_seq4/`, and the newest focused powermove diagnostics live under `powermove_debug/bcone_seq4/`. Together they are the canonical local evidence for the current JOSH-vs-GVHMR comparison pass.
+**Current operational state**: `bcone_seq4` is `window_ready`, not `full_clip_ready`. The newest benchmark artifacts live under `benchmarks/bcone_seq4/`, and the newest focused powermove diagnostics live under `powermove_debug/bcone_seq4/RS0mFARO1x4_seq4/RS0mFARO1x4.4332.4423/`. Together they are the canonical local evidence for the current JOSH-vs-GVHMR comparison pass.
 
 ---
 
@@ -69,11 +69,11 @@ All audio features extracted from the BC One 2011 video soundtrack using librosa
 
 | Path | Date | Description |
 |------|------|-------------|
-| `powermove_debug/bcone_seq4/powermove_report.json` | 2026-03-25 13:39 | Machine-readable diagnostics for the failing powermove segment. Result: `coverage_and_pose_quality`, one 23-frame JOSH candidate, recommendation `keep_gvhmr_baseline` on that short slice. |
-| `powermove_debug/bcone_seq4/powermove_report.md` | 2026-03-25 13:39 | Human-readable summary of the same result, including the window ladder and local artifact paths. |
-| `powermove_debug/bcone_seq4/candidate_windows.csv` | 2026-03-25 13:39 | One row per candidate JOSH window inside the powermove segment. |
-| `powermove_debug/bcone_seq4/frame_diagnostics.csv` | 2026-03-25 13:39 | Per-frame availability table for the powermove segment: JOSH validity, BRACE GT overlap, and shot-boundary flags. |
-| `powermove_debug/bcone_seq4/renders/comparison_landscape_530_553.mp4` | 2026-03-25 13:39 | Comparison strip for the best surviving short powermove candidate window. |
+| `powermove_debug/bcone_seq4/RS0mFARO1x4_seq4/RS0mFARO1x4.4332.4423/powermove_report.json` | 2026-03-25 13:47 | Machine-readable diagnostics for the failing powermove segment. Result: `coverage_and_pose_quality`, one 23-frame JOSH candidate, recommendation `keep_gvhmr_baseline` on that short slice. |
+| `powermove_debug/bcone_seq4/RS0mFARO1x4_seq4/RS0mFARO1x4.4332.4423/powermove_report.md` | 2026-03-25 13:47 | Human-readable summary of the same result, including the window ladder and local artifact paths. |
+| `powermove_debug/bcone_seq4/RS0mFARO1x4_seq4/RS0mFARO1x4.4332.4423/candidate_windows.csv` | 2026-03-25 13:47 | One row per candidate JOSH window inside the powermove segment. |
+| `powermove_debug/bcone_seq4/RS0mFARO1x4_seq4/RS0mFARO1x4.4332.4423/frame_diagnostics.csv` | 2026-03-25 13:47 | Per-frame availability table for the powermove segment: JOSH validity, BRACE GT overlap, and shot-boundary flags. |
+| `powermove_debug/bcone_seq4/RS0mFARO1x4_seq4/RS0mFARO1x4.4332.4423/renders/comparison_landscape_530_553.mp4` | 2026-03-25 13:47 | Comparison strip for the best surviving short powermove candidate window. |
 
 ---
 

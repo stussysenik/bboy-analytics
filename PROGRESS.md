@@ -68,11 +68,11 @@ Move the powermove discussion from speculation to a concrete segment-level diagn
 
 ### Outputs Produced
 
-- `experiments/results/powermove_debug/bcone_seq4/powermove_report.json`
-- `experiments/results/powermove_debug/bcone_seq4/powermove_report.md`
-- `experiments/results/powermove_debug/bcone_seq4/candidate_windows.csv`
-- `experiments/results/powermove_debug/bcone_seq4/frame_diagnostics.csv`
-- `experiments/results/powermove_debug/bcone_seq4/renders/comparison_landscape_530_553.mp4`
+- `experiments/results/powermove_debug/bcone_seq4/RS0mFARO1x4_seq4/RS0mFARO1x4.4332.4423/powermove_report.json`
+- `experiments/results/powermove_debug/bcone_seq4/RS0mFARO1x4_seq4/RS0mFARO1x4.4332.4423/powermove_report.md`
+- `experiments/results/powermove_debug/bcone_seq4/RS0mFARO1x4_seq4/RS0mFARO1x4.4332.4423/candidate_windows.csv`
+- `experiments/results/powermove_debug/bcone_seq4/RS0mFARO1x4_seq4/RS0mFARO1x4.4332.4423/frame_diagnostics.csv`
+- `experiments/results/powermove_debug/bcone_seq4/RS0mFARO1x4_seq4/RS0mFARO1x4.4332.4423/renders/comparison_landscape_530_553.mp4`
 
 ### Result
 

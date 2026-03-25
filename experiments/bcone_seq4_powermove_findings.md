@@ -31,11 +31,11 @@ This means the immediate next task is not a blind rerun. The next task is to imp
 
 ## Canonical Artifacts
 
-- Report: `experiments/results/powermove_debug/bcone_seq4/powermove_report.md`
-- Machine-readable report: `experiments/results/powermove_debug/bcone_seq4/powermove_report.json`
-- Candidate table: `experiments/results/powermove_debug/bcone_seq4/candidate_windows.csv`
-- Frame diagnostics: `experiments/results/powermove_debug/bcone_seq4/frame_diagnostics.csv`
-- Review render: `experiments/results/powermove_debug/bcone_seq4/renders/comparison_landscape_530_553.mp4`
+- Report: `experiments/results/powermove_debug/bcone_seq4/RS0mFARO1x4_seq4/RS0mFARO1x4.4332.4423/powermove_report.md`
+- Machine-readable report: `experiments/results/powermove_debug/bcone_seq4/RS0mFARO1x4_seq4/RS0mFARO1x4.4332.4423/powermove_report.json`
+- Candidate table: `experiments/results/powermove_debug/bcone_seq4/RS0mFARO1x4_seq4/RS0mFARO1x4.4332.4423/candidate_windows.csv`
+- Frame diagnostics: `experiments/results/powermove_debug/bcone_seq4/RS0mFARO1x4_seq4/RS0mFARO1x4.4332.4423/frame_diagnostics.csv`
+- Review render: `experiments/results/powermove_debug/bcone_seq4/RS0mFARO1x4_seq4/RS0mFARO1x4.4332.4423/renders/comparison_landscape_530_553.mp4`
 
 ## Interpretation
 
