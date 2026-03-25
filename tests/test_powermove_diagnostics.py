@@ -14,6 +14,7 @@ from pipeline.brace_benchmark import BraceSegment, BraceSequence
 from pipeline.powermove_diagnostics import (
     build_powermove_report,
     build_segment_diagnostics_report,
+    build_window_ladder,
     infer_josh_sidecar_paths,
     render_markdown_report,
     select_target_segment,
@@ -127,10 +128,15 @@ def test_build_segment_diagnostics_report_flags_frames_short_of_gate():
     assert report["segment_summary"]["source_track_ids"] == [7]
     assert report["ground_truth_2d"]["segment_frames_available"] == 15
     assert report["diagnosis"]["primary_bottleneck"] == "coverage_continuity"
+    assert report["window_ladder"][0]["min_frames"] == 8
+    assert report["window_ladder"][-1]["min_frames"] == 45
     assert len(report["candidate_windows"]) == 1
     assert report["candidate_windows"][0]["frames_short_of_benchmark_gate"] == 5
     assert report["candidate_windows"][0]["source_track_ids"] == [7]
     assert not report["candidate_windows"][0]["is_benchmarkable"]
+    assert len(report["frame_diagnostics"]) == 40
+    assert report["frame_diagnostics"][5]["local_frame"] == 35
+    assert report["frame_diagnostics"][5]["josh_valid"] is True
 
 
 def test_build_powermove_report_flags_mixed_coverage_and_pose_quality_failure():
@@ -258,4 +264,36 @@ def test_render_markdown_report_mentions_primary_bottleneck():
     markdown = render_markdown_report(report)
 
     assert "Primary bottleneck:" in markdown
+    assert "Window Ladder" in markdown
     assert "Candidate Windows" in markdown
+
+
+def test_build_window_ladder_counts_threshold_survivors():
+    segment = BraceSegment(
+        uid="powermove",
+        dance_type="powermove",
+        dancer="tester",
+        year=2011,
+        global_start_frame=100,
+        global_end_frame_exclusive=160,
+        local_start_frame=0,
+        local_end_frame_exclusive=60,
+    )
+    josh_windows = [
+        {"start_frame": 10, "end_frame_inclusive": 32, "end_frame_exclusive": 33, "n_frames": 23},
+        {"start_frame": 40, "end_frame_inclusive": 47, "end_frame_exclusive": 48, "n_frames": 8},
+    ]
+
+    ladder = build_window_ladder(
+        segment=segment,
+        josh_windows=josh_windows,
+        shot_boundaries=[],
+        thresholds=(8, 12, 24, 45),
+    )
+
+    assert ladder == [
+        {"min_frames": 8, "candidate_count": 2, "best_n_frames": 23},
+        {"min_frames": 12, "candidate_count": 1, "best_n_frames": 23},
+        {"min_frames": 24, "candidate_count": 0, "best_n_frames": 0},
+        {"min_frames": 45, "candidate_count": 0, "best_n_frames": 0},
+    ]

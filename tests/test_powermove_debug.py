@@ -1,4 +1,4 @@
-"""Tests for the powermove diagnostics helpers."""
+"""Compatibility tests for the powermove debug wrapper."""
 
 from __future__ import annotations
 
@@ -80,10 +80,7 @@ def test_build_powermove_debug_report_identifies_short_window_quality_present():
             "windows": [{"start_frame": 15, "end_frame": 37, "n_frames": 23}],
         }
     }
-    gt_frames = {
-        frame: np.zeros((17, 2), dtype=np.float32)
-        for frame in range(15, 38)
-    }
+    gt_frames = {}
     josh_2d = np.zeros((60, 17, 2), dtype=np.float32)
     gvhmr_2d = np.zeros((60, 17, 2), dtype=np.float32)
     for frame in range(15, 38):
