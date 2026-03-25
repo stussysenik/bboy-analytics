@@ -1,7 +1,7 @@
 # MANIFEST: experiments/
 
 **Generated**: 2026-03-23
-**Purpose**: Bboy musicality analysis -- from raw GVHMR 3D joints to validated musicality metrics and Instagram-shareable video exports. Contains the experiment harness, rendering pipeline, component library, and all outputs.
+**Purpose**: Experiment and visualization layer for the repo. This directory now spans both the older GVHMR-first musicality work and the current JOSH-first validation / benchmark path, including renderers, benchmark harnesses, research memos, and output manifests.
 
 ---
 
@@ -11,6 +11,14 @@
 |-----------|-------------|----------|
 | `results/` | All experiment outputs: 3D joints, audio features, metrics, videos, 8 validated experiments, locked segments | [results/MANIFEST.md](results/MANIFEST.md) |
 | `exports/` | Polished video exports (v3 skeleton/spatial/timelines, v5 pitch/worldstate) | [exports/MANIFEST.md](exports/MANIFEST.md) |
+
+### Active Research Artifacts
+
+| Path | Description |
+|------|-------------|
+| `josh_research_report.md` | Deep audit of the overnight JOSH run: chunking, focal instability, contact issues, and tuning fixes. |
+| `josh_powermove_decision_framework.md` | Strategic next-step memo: what monocular YouTube can likely support, why powermoves are harder, when to try HSMR / SKEL, and when custom sensor-rich capture is justified. |
+| `results/benchmarks/bcone_seq4/benchmark.md` | Current BRACE 2D-backed benchmark for `bcone_seq4`: 1 benchmarkable footwork window, no benchmarkable powermove window yet, and the validated footwork slice now favors JOSH over the GVHMR baseline. |
 
 ### Related Manifests (External)
 
@@ -35,9 +43,13 @@
 | `render_timelines.py` | 14K | Multi-track timeline renderer: beats, energy, joint speed, musicality ribbon (v3 export) |
 | `render_pitch.py` | 13K | Elevated-camera pitch view renderer (v5 export) |
 | `render_worldstate.py` | 7.8K | Top-down world-state renderer (v5 export) |
+| `render_model_comparison.py` | 9.8K | Synchronized JOSH-vs-GVHMR side-by-side render for the same validated source window. |
 | `world_state.py` | 17K | World-state data model: floor plane, dancer position/orientation, movement trail computation |
 | `person_lock.py` | 4.1K | Person locking: segments `joints_3d_REAL.npy` into contiguous detection windows (produces `locked/` segments) |
 | `extract_2d.py` | 4.0K | Extracts 2D pose data (vitpose, bounding boxes, camera intrinsics) from GVHMR results into standalone numpy arrays |
+| `benchmark_josh_brace.py` | 9.5K | BRACE-aligned JOSH vs GVHMR benchmark CLI. Emits `benchmark.json`, `benchmark.md`, and `windows.csv` for evaluated sequences. |
+| `fetch_brace_assets.py` | 2.1K | Downloads and extracts BRACE manual/interpolated keypoints or audio features, optionally filtered to one video. |
+| `export_josh_2d.py` | 0.9K | Projects dense JOSH joints into full-frame COCO-17 image coordinates for BRACE 2D benchmarking. |
 
 ---
 
@@ -118,23 +130,23 @@ Static images: publication figures, video preview thumbnails, and visualization 
 ## Pipeline Flow
 
 ```
-GVHMR (gvhmr_src/outputs/)
+BRACE clip / local video
+  |
+  +--> GVHMR outputs --------------------------+
+  |                                            |
+  +--> JOSH outputs --> dense extraction ----+ |
+  |                                          | |
+  +--> BRACE annotations ------------------- | |
+                                             v v
+extract_2d.py / benchmark_josh_brace.py / render_*.py
+  |
+  +--> legacy musicality experiments (EXP-001..008)
+  +--> validated JOSH review renders
+  +--> JOSH-vs-GVHMR comparison renders
+  +--> BRACE-aligned benchmark reports
   |
   v
-extract_2d.py          -- Extract 2D pose, bboxes, camera K
-person_lock.py         -- Segment into locked detection windows
-  |
-  v
-synthetic_joints.py    -- Generate calibration data
-harness.py             -- Run all experiments (EXP-001..008)
-statistics.py          -- Statistical validation
-publication_figs.py    -- Generate figures
-  |
-  v
-render_*.py            -- Render video exports
-  |
-  v
-results/               -- All data outputs
+results/               -- Data outputs and benchmark artifacts
 exports/               -- Polished video exports
 assets/                -- Static images
 ```

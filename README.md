@@ -1,50 +1,92 @@
 # bboy-analytics
 
-Quantitative breakdance battle analytics — cross-correlating 3D joint velocities with audio beat structure to produce musicality scores, spatial analysis, and Instagram-shareable breakdown videos.
+Quantitative breakdance battle analytics with a JOSH-first motion pipeline, BRACE ground-truth segmentation, and renderable review outputs for difficult movement classes.
 
-## The Core Metric
+## Table Of Contents
 
-```
-μ = max_τ corr(M(t), H(t−τ))
-```
+1. [Start Here](#start-here)
+2. [Current Direction](#current-direction)
+3. [What Works Now](#what-works-now)
+4. [Scoring Model](#scoring-model)
+5. [Data Sources](#data-sources)
+6. [Pipeline](#pipeline)
+7. [Current Gates](#current-gates)
+8. [Project Structure](#project-structure)
+9. [Quick Start](#quick-start)
+10. [Research Log](#research-log)
+11. [Environment](#environment)
+12. [Related](#related)
 
-**M(t)** = total movement energy from 3D joint velocities (SMPL 22-joint skeleton)
-**H(t)** = audio hotness signal (beat strength, bass energy, spectral flux, rhythm complexity)
-**μ** = peak cross-correlation — how tightly a dancer's movement locks to the music
+## Start Here
 
-## Musicality Grades
+Use the docs in this order:
 
-| Grade | μ Range | Label |
-|-------|---------|-------|
-| D | < 0.10 | Off-Beat |
-| C | 0.10–0.25 | Catching It |
-| B | 0.25–0.40 | Grooving |
-| A | 0.40–0.60 | Locked In |
-| S | > 0.60 | Surgical |
+1. [KNOWLEDGE_MAP.md](KNOWLEDGE_MAP.md) — canonical map of the stack, gates, and model roles
+2. [README.md](README.md) — operational summary and commands
+3. [ARCHITECTURE.md](ARCHITECTURE.md) — broader research architecture and layer survey
+4. [experiments/josh_research_report.md](experiments/josh_research_report.md) — detailed JOSH batch audit
+5. [experiments/josh_powermove_decision_framework.md](experiments/josh_powermove_decision_framework.md) — powermove strategy and pivot criteria
 
-## Validation Status
+## Current Direction
 
-**Hypothesis H1: SUPPORTED** (p < 0.001, Cohen's d = 4.15)
+The repo is no longer treating GVHMR as the main answer. The current engineering objective is:
 
-| Metric | Value |
-|--------|-------|
-| Mean μ (3 dancers) | 0.425 ± 0.081 |
-| Random control μ | 0.009 |
-| Separation | 41× |
+1. Run JOSH on BRACE clips.
+2. Extract a dense clip-aligned joint artifact with explicit validity/provenance.
+3. Gate rendering on physical sanity checks.
+4. Score by segment type instead of one global beat-hit number.
+5. Produce clean review renders and JOSH-vs-GVHMR comparisons on the same validated window.
+
+## What Works Now
+
+- JOSH extraction now writes a dense `joints_3d_josh.npy` plus:
+  - `joints_3d_josh_valid_mask.npy`
+  - `joints_3d_josh_source_track_ids.npy`
+  - `joints_3d_josh_metadata.json`
+- The metadata includes renderability, contiguous recommended windows, and track provenance.
+- `render_breakdown.py` supports clip windows, BRACE segment labels, and segment-aware grades.
+- `render_model_comparison.py` renders synchronized JOSH-vs-GVHMR side-by-side videos for the same window.
+- `benchmark_josh_brace.py` now produces BRACE-aligned benchmark artifacts under `experiments/results/benchmarks/`, including BRACE 2D scoring when keypoints are local.
+- `fetch_brace_assets.py` downloads BRACE manual/interpolated keypoints for local benchmarking.
+- `export_josh_2d.py` projects dense JOSH joints into full-frame COCO-17 coordinates for BRACE 2D evaluation.
+
+## Scoring Model
+
+The repo still keeps the original global musicality experiments, but the active render path is now segment-aware:
+
+- `toprock`: soft beat alignment, groove consistency, control
+- `footwork`: speed, contact, syncopation, COM stability
+- `powermove`: cyclic consistency, energy, duration
+- `freeze`: heuristic-only stability/duration for now
+
+This is driven by BRACE dance-type annotations and should be treated as the operative product path, not the old single-number `μ` prototype alone.
 
 ## Data Sources
 
 | Source | Status | Handles Inversions? |
 |--------|--------|-------------------|
-| **GVHMR** | Available | No — single-pass regression fails on headspins/windmills |
-| **JOSH** | Batch job running on L4 | Yes — per-track scene optimization with contact constraints |
+| **JOSH** | Primary | Yes — scene/human optimization; requires validation and windowing because tracks are sparse |
+| **GVHMR** | Diagnostic baseline | Useful for comparison, not the final target on hard powermoves |
+| **BRACE** | Ground truth labels | Segments, beats, dancer names, shot boundaries; 2D keypoints still available for future benchmarking |
 
 ## Pipeline
 
 ```
-Video → Segment (SAM3) → Track (TRAM) → Pose (GVHMR or JOSH)
-  → WorldState (joints, energy, COM, cyclic) → Renderers → Exports
+Video → Track/Scene (TRAM + DECO + JOSH)
+  → Dense clip-aligned joints + validity mask
+  → Validation / recommended render window
+  → BRACE segments + segment-aware metrics
+  → Breakdown render / comparison render
 ```
+
+## Current Gates
+
+| Gate | Question | Current State |
+|------|----------|---------------|
+| Extraction | Do we have a dense clip-aligned JOSH artifact with provenance? | Yes |
+| Validation | Is the sequence safe to render end-to-end? | `window_ready`, not `full_clip_ready` |
+| Segment scoring | Are BRACE semantics wired into the render path? | Yes |
+| Objective benchmark | Can we quantify JOSH vs GVHMR per segment/window? | Yes for `bcone_seq4`; manual+interpolated BRACE 2D is now local and the validated footwork window favors JOSH |
 
 ## Project Structure
 
@@ -61,6 +103,7 @@ Video → Segment (SAM3) → Track (TRAM) → Pose (GVHMR or JOSH)
 │   │   ├── move_bar.py            #     Dance phase bar
 │   │   └── observatory/           #     Real-time dashboard (8 modules)
 │   ├── render_breakdown.py        #   v4.1 composite (Instagram + landscape)
+│   ├── benchmark_josh_brace.py    #   BRACE-aligned JOSH vs GVHMR benchmark CLI
 │   ├── render_skeleton.py         #   Skeleton overlay on video
 │   ├── render_spatial.py          #   Spatial coverage heatmap
 │   ├── render_timelines.py        #   Beat/energy/musicality timeline
@@ -68,14 +111,16 @@ Video → Segment (SAM3) → Track (TRAM) → Pose (GVHMR or JOSH)
 │   ├── render_pitch.py            #   Elevated camera angle
 │   ├── render_worldstate.py       #   Top-down floor plan
 │   ├── world_state.py             #   Deterministic per-frame state
-│   └── exports/                   #   Rendered outputs (see MANIFEST.md)
+│   ├── exports/                   #   Rendered outputs (see MANIFEST.md)
 │       ├── breakdown/             #     Instagram composites
 │       ├── skeleton/              #     Skeleton overlay
 │       ├── spatial/               #     Spatial heatmap
 │       ├── timelines/             #     Beat/energy timelines
 │       ├── trails/                #     Ghost trails
 │       ├── pitch/                 #     Elevated camera
-│       └── worldstate/            #     Top-down view
+│       ├── worldstate/            #     Top-down view
+│   └── results/                   #   Derived data artifacts
+│       └── benchmarks/            #     Segment-class benchmark reports
 ├── pipeline/                      # Batch data processing
 │   ├── extract.py                 #   GVHMR/JOSH → joints .npy
 │   ├── compare.py                 #   GVHMR vs JOSH comparison
@@ -97,12 +142,52 @@ Video → Segment (SAM3) → Track (TRAM) → Pose (GVHMR or JOSH)
 ## Quick Start
 
 ```bash
-# Render the v4.1 breakdown (Instagram vertical + landscape)
+# Rebuild dense clip-aligned JOSH joints from aggregated output
+python poc/remote/extract-joints-josh.py \
+  --josh-dir josh_input/bcone_seq4 \
+  --body-model-path gvhmr_src/inputs/checkpoints/body_models \
+  --fps 29.97
+
+# Render a validated JOSH window from the original footage
 python experiments/render_breakdown.py \
-  --joints experiments/results/joints_3d_REAL_seq4.npy \
-  --video experiments/results/gvhmr_mesh_clean_seq4.mp4 \
+  --joints josh_input/bcone_seq4/joints_3d_josh.npy \
+  --video josh_input/bcone_seq4/video.mp4 \
   --beats experiments/results/beats.npy \
-  --layout both
+  --audio josh_input/bcone_seq4/audio.wav \
+  --layout landscape \
+  --window-start-frame 780 \
+  --window-end-frame 825
+
+# Render JOSH vs GVHMR side by side on the same window
+python experiments/render_model_comparison.py \
+  --josh-joints josh_input/bcone_seq4/joints_3d_josh.npy \
+  --josh-meta josh_input/bcone_seq4/joints_3d_josh_metadata.json \
+  --gvhmr-joints experiments/results/joints_3d_REAL_seq4.npy \
+  --video josh_input/bcone_seq4/video.mp4 \
+  --beats experiments/results/beats.npy \
+  --audio josh_input/bcone_seq4/audio.wav \
+  --layout landscape \
+  --brace-video-id RS0mFARO1x4 \
+  --brace-start-frame 3802
+
+# Generate the BRACE-aligned benchmark report for the current sequence
+python experiments/fetch_brace_assets.py \
+  --artifacts manual_keypoints interpolated_keypoints \
+  --year 2011 \
+  --video-id RS0mFARO1x4
+
+python experiments/export_josh_2d.py \
+  --joints josh_input/bcone_seq4/joints_3d_josh.npy \
+  --video josh_input/bcone_seq4/video.mp4
+
+python experiments/benchmark_josh_brace.py \
+  --josh-joints josh_input/bcone_seq4/joints_3d_josh.npy \
+  --josh-meta josh_input/bcone_seq4/joints_3d_josh_metadata.json \
+  --gvhmr-joints experiments/results/joints_3d_REAL_seq4.npy \
+  --gvhmr-2d experiments/results/vitpose_2d_seq4.npy \
+  --video-id RS0mFARO1x4 \
+  --seq-idx 4 \
+  --sequence-name bcone_seq4
 
 # Individual renderers
 python experiments/render_skeleton.py --joints ... --mesh-video ...
@@ -116,6 +201,13 @@ uv run bboy-recap --help
 ## Research Log
 
 See [PROGRESS.md](PROGRESS.md) for the running research journal.
+
+Key active research artifacts:
+
+- [KNOWLEDGE_MAP.md](KNOWLEDGE_MAP.md) — canonical stack map, gates, model roles, and reading order
+- [experiments/josh_research_report.md](experiments/josh_research_report.md) — JOSH batch audit, tuning findings, and pipeline failure analysis
+- [experiments/josh_powermove_decision_framework.md](experiments/josh_powermove_decision_framework.md) — next-stage experiment logic: JOSH stabilization, BRACE benchmarking, HSMR/SKEL role, and when to escalate to sensor-rich capture
+- [experiments/results/benchmarks/bcone_seq4/benchmark.md](experiments/results/benchmarks/bcone_seq4/benchmark.md) — current BRACE 2D-backed benchmark report for `bcone_seq4`
 
 ## Environment
 

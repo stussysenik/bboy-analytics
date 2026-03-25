@@ -1,10 +1,194 @@
-# Progress Log — gvhmr-musicality
+# Progress Log — bboy-analytics
 
 > Running research journal for quantitative breakdance musicality analysis.
 > Each entry documents one work session: what was tried, what worked, what didn't, and what's next.
 >
 > For detailed experiment data see [EXPERIMENTS.md](EXPERIMENTS.md).
 > For full pipeline architecture see [ARCHITECTURE.md](ARCHITECTURE.md).
+> For the canonical stack/gates map see [KNOWLEDGE_MAP.md](KNOWLEDGE_MAP.md).
+
+---
+
+## Table Of Contents
+
+1. [Current State Snapshot](#current-state-snapshot)
+2. [Research Evolution](#research-evolution)
+3. [2026-03-25 — Research Spine + BRACE Benchmark Harness](#2026-03-25--research-spine--brace-benchmark-harness)
+4. [2026-03-25 — JOSH Dense Extraction + Renderability Gates + BRACE Segment Scoring](#2026-03-25--josh-dense-extraction--renderability-gates--brace-segment-scoring)
+5. [2026-03-23 — POC Validated: Musicality Cross-Correlation Metric (μ)](#2026-03-23--poc-validated-musicality-cross-correlation-metric-μ)
+6. [2026-03-24 — v4.1 Breakdown Renderer + JOSH Pipeline Fix + Repo Reorganization](#2026-03-24--v41-breakdown-renderer--josh-pipeline-fix--repo-reorganization)
+
+---
+
+## Current State Snapshot
+
+| Item | Current State |
+|------|---------------|
+| Primary reconstruction path | JOSH-first |
+| Diagnostic baseline | GVHMR |
+| Ground truth source | BRACE annotations |
+| Current best evidence | Clean validated JOSH footwork window on `bcone_seq4` frames `780–824`, plus BRACE 2D benchmark support on the same slice |
+| Current renderability | `window_ready`, not `full_clip_ready` |
+| Proven | Dense JOSH extraction, validation gating, BRACE-aware rendering, JOSH-vs-GVHMR side-by-side comparison, one-window BRACE 2D benchmark |
+| Unproven | Full-round JOSH stability, broad powermove superiority, multi-sequence BRACE 2D benchmark |
+| Immediate next gate | Benchmarkable powermove windows and longer JOSH-valid windows before more reruns |
+
+## Research Evolution
+
+1. **POC phase**
+   Proved the musicality metric idea on synthetic / controlled data.
+2. **Rendering phase**
+   Built review surfaces and video outputs so motion quality could be inspected instead of inferred from metrics alone.
+3. **JOSH-first phase**
+   Shifted the repo from GVHMR-as-answer to JOSH-as-candidate-primary-backbone with validation gating.
+4. **Benchmark phase**
+   The next question is no longer “can we render something interesting?” but “where does JOSH actually beat GVHMR, and why does it still fail on the hard segments?”
+
+---
+
+## 2026-03-25 — Research Spine + BRACE Benchmark Harness
+
+### Objective
+
+Stop treating the repo as a loose pile of experiments and turn it into a layered research system with explicit gates. Build the first benchmark harness that can explain, with BRACE-aligned windows, why the current JOSH path is only `window_ready`.
+
+### What Changed
+
+- Added `KNOWLEDGE_MAP.md` as the canonical non-chronological entry point for:
+  - stack layers,
+  - current gates,
+  - model roles,
+  - and reading order.
+- Added table-of-contents / orientation upgrades across the key long-form docs so the research trail is navigable instead of chronological-only.
+- Added a BRACE-aligned benchmark harness to evaluate JOSH and GVHMR on identical windows with:
+  - per-segment structural summaries,
+  - failure tags,
+  - and action recommendations.
+
+### Outputs Produced
+
+- `experiments/benchmark_josh_brace.py`
+- `pipeline/brace_benchmark.py`
+- `experiments/results/benchmarks/bcone_seq4/benchmark.json`
+- `experiments/results/benchmarks/bcone_seq4/benchmark.md`
+- `experiments/results/benchmarks/bcone_seq4/windows.csv`
+
+### Why This Matters
+
+The phrase “stabilized window” was too vague. The repo now needs to consistently speak in terms of:
+
+- `full_clip_ready`
+- `window_ready`
+- `not_renderable`
+
+and pair those states with benchmark outputs rather than intuition.
+
+### First Benchmark Result (`bcone_seq4`)
+
+- BRACE sequence: `RS0mFARO1x4.4` (`lil g`)
+- JOSH sequence renderability remains `window_ready`
+- Benchmarkable segments: `1 / 5`
+- The only benchmarkable segment today is the final `footwork` segment
+- The `powermove` segment has no benchmarkable JOSH window under the current `45`-frame gate, so powermove performance remains unevaluable on this sequence
+- BRACE 2D status is now `manual+interpolated` locally (`879` frames loaded)
+- On the validated `780–824` footwork window, JOSH outperforms the GVHMR baseline in BRACE 2D reprojection:
+  - JOSH: `54.79 px`, `0.1063` bbox-diag frac, `PCK@0.2 = 0.9412`
+  - GVHMR baseline: `775.59 px`, `1.4875` bbox-diag frac, `PCK@0.2 = 0.0`
+
+### Next Gate
+
+Use the current benchmark report to explain why `bcone_seq4` is only `window_ready`, then decide whether the dominant issue outside the surviving footwork window is:
+
+- JOSH tuning,
+- stronger pose priors,
+- or information limits from monocular broadcast video.
+
+---
+
+## 2026-03-25 — JOSH Dense Extraction + Renderability Gates + BRACE Segment Scoring
+
+### Objective
+
+Turn the overnight JOSH batch from a collection of per-track artifacts into a renderable, provenance-aware product path. The practical goal was not "any JOSH file exists" but "we can name a specific validated BRACE window and render it cleanly."
+
+### What Changed
+
+- **Dense JOSH extraction**: `poc/remote/extract-joints-josh.py` now defaults to clip-aligned dense assembly instead of a single sparse track dump. It writes:
+  - `joints_3d_josh.npy`
+  - `joints_3d_josh_valid_mask.npy`
+  - `joints_3d_josh_source_track_ids.npy`
+  - `joints_3d_josh_metadata.json`
+- **Track selection fixed**: `pipeline/track_select.py` now splits on frame gaps as well as displacement spikes, and `primary_track_id` now actually matches `primary_track`.
+- **Validation layer added**: `src/extreme_motion_reimpl/recap/validate.py` now summarizes dense arrays into:
+  - coverage
+  - contiguous windows
+  - per-window root jump stats
+  - renderability (`full_clip_ready` / `window_ready` / `not_renderable`)
+- **Renderer upgraded**:
+  - `render_breakdown.py` now supports `--window-start-frame` / `--window-end-frame`
+  - BRACE start-frame auto-detection for `bcone_seq4`
+  - segment-aware metrics instead of only a global beat-hit badge
+  - shot-boundary-aware segment scoring
+  - audio/video trimming aligned to the selected window
+- **Comparison wrapper added**: `render_model_comparison.py` renders synchronized JOSH and GVHMR outputs for the same source window and stacks them side by side.
+
+### Current JOSH State for `bcone_seq4`
+
+- Dense clip length: **999 frames**
+- Valid JOSH coverage after auto-segment assembly: **405 frames (40.5%)**
+- Recommended render window: **frames 780–824** (`1.50s`)
+- Window max root displacement: **0.194 m**
+- Renderability: **`window_ready`**
+
+### Diagnostics
+
+The old sparse-track artifact was misleading:
+- shape `240x24x3`
+- max root step `8.0 m/frame`
+- no clip alignment
+
+The new dense artifact makes the real state explicit:
+- full clip stored with invalid frames masked out
+- provenance preserved via `source_track_ids`
+- no fake teleport stats across masked gaps
+
+On the validated `780–824` window:
+- JOSH and GVHMR both pass identity/inversion sanity checks
+- aligned diagnostic MPJPE is `448.4 mm`
+- comparison is now meaningful because both streams are on the same frames
+
+### Outputs Produced
+
+- Clean JOSH landscape render for frames `780–824`
+- JSON sidecar with segment metrics and source frame offset
+- Side-by-side JOSH-vs-GVHMR comparison render on the same BRACE window
+
+### What This Does Not Solve Yet
+
+- Full-round JOSH tracking is still not stable enough to call `full_clip_ready`
+- The best validated window is currently short (1.5s)
+- BRACE 2D keypoints and audio feature packs are still not integrated for pose benchmarking / normative tables
+- Powermove-specific physics metrics (`L_barrel`, ice-skater effect, contact-aware decomposition) still need a dedicated scorer pass
+
+### Next Steps
+
+1. Increase clean JOSH coverage beyond window-level validity.
+2. Benchmark JOSH vs BRACE manual/interpolated 2D keypoints.
+3. Port powermove-specific physics features into the segment scorer.
+4. Build percentile / normative BRACE tables once the validation path is stable.
+
+### Follow-On Research Artifact
+
+To avoid losing the reasoning behind the next pivot, the repo now also includes:
+
+- `experiments/josh_powermove_decision_framework.md`
+
+This document answers the strategic question that emerged after the first validated JOSH render:
+
+- what JOSH can plausibly solve on YouTube / BRACE footage,
+- why powermoves are harder than toprock and footwork,
+- where HSMR / SKEL would help versus where they would not,
+- and when to escalate from monocular broadcast video to iPhone LiDAR / IMU or multi-camera capture.
 
 ---
 
