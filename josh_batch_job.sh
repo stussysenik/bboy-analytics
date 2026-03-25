@@ -4,9 +4,18 @@ set -euo pipefail
 # JOSH Batch Job — runs DECO → JOSH inference → Aggregation → Joint extraction
 # Supports resumable stages: bash josh_batch_job.sh [all|inference|aggregate|extract]
 #
-# Submitted via:
-#   lightning run job --name josh-inference-v3 --machine L4 --studio gvhmr \
-#     --command "bash /teamspace/studios/this_studio/josh_batch_job.sh"
+# IMPORTANT: Use THIS script, NOT run_remaining.sh or run_remaining2.sh.
+# This script has checkpoint/resume logic (skips DECO if done, resumes inference).
+#
+# Submit to Lightning L4:
+#   lightning run job --name josh-inference-v6 --machine L4 --studio gvhmr \
+#     --command "bash /teamspace/studios/this_studio/josh_batch_job.sh inference"
+#
+# Stages:
+#   all       — run everything (DECO + inference + aggregate + extract)
+#   inference — skip DECO, run inference + aggregate + extract
+#   aggregate — skip inference, just aggregate + extract
+#   extract   — skip everything, just extract joints from existing chunks
 
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 INPUT=/teamspace/studios/this_studio/josh_input/bcone_seq4
@@ -14,8 +23,9 @@ JOSH_DIR=/teamspace/studios/this_studio/josh
 STAGE=${1:-all}
 
 echo "=========================================="
-echo "  JOSH Batch Job v3 — $(date)"
+echo "  JOSH Batch Job v4 (bboy-tuned) — $(date)"
 echo "  Stage: $STAGE"
+echo "  Config: $(python3 -c 'from josh.josh.config import BBOY_PRESET; print(BBOY_PRESET)' 2>/dev/null || echo 'bboy-tuned')"
 echo "  GPU: $(nvidia-smi --query-gpu=name,memory.total --format=csv,noheader 2>/dev/null || echo 'no GPU')"
 echo "=========================================="
 
@@ -61,16 +71,16 @@ if [ "$STAGE" = "all" ] || [ "$STAGE" = "inference" ]; then
     echo "JOSH inference done in $(($(date +%s) - START_T))s"
 fi
 
-# Aggregation
-if [ "$STAGE" = "all" ] || [ "$STAGE" = "aggregate" ]; then
+# Aggregation (also runs after inference stage)
+if [ "$STAGE" = "all" ] || [ "$STAGE" = "inference" ] || [ "$STAGE" = "aggregate" ]; then
     echo ""
     echo "[4.5/5] JOSH aggregation..."
     python josh/aggregate_results.py --input_folder "$INPUT"
     echo "Aggregation done"
 fi
 
-# Joint extraction
-if [ "$STAGE" = "all" ] || [ "$STAGE" = "extract" ]; then
+# Joint extraction (also runs after inference stage)
+if [ "$STAGE" = "all" ] || [ "$STAGE" = "inference" ] || [ "$STAGE" = "aggregate" ] || [ "$STAGE" = "extract" ]; then
     echo ""
     echo "[5/5] Joint extraction..."
     cd /teamspace/studios/this_studio

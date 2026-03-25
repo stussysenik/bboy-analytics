@@ -16,7 +16,7 @@ from .panel import Panel, FontCache, TXT, TXT_DIM
 SEG_COLORS = {
     "toprock":   (33, 150, 243),
     "footwork":  (76, 175, 80),
-    "powermove": (255, 87, 34),
+    "powermove": (220, 40, 40),
     "freeze":    (156, 39, 176),
 }
 

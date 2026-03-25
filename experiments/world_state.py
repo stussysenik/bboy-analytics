@@ -337,6 +337,105 @@ def compute_world_state(
     )
 
 
+def classify_phases(ws: WorldState, min_duration_s: float = 0.5) -> list[dict]:
+    """Auto-detect dance phases from WorldState signals.
+
+    Returns list of {start_s, end_s, dance_type} segments compatible with MoveBar.
+
+    Detection rules (with standing-height gate to avoid mislabeling):
+      FREEZE:    kinetic_energy < 15th percentile for 0.5s+
+      POWERMOVE: cyclic_score > 0.5 AND com_height drops significantly below standing
+      FOOTWORK:  com_height significantly below standing AND not freeze/powermove
+      TOPROCK:   everything else (standing, rhythmic movement)
+
+    The standing-height gate prevents toprock-only clips from being mislabeled.
+    A significant height drop = COM drops > 30% of standing height range below
+    the 75th percentile (i.e., the dancer actually goes down, not just bobbing).
+    """
+    F = ws.frames
+    fps = ws.fps
+    labels = np.full(F, 0, dtype=int)  # 0=toprock, 1=footwork, 2=powermove, 3=freeze
+
+    # Standing height gate: estimate if/when the dancer actually goes down
+    # Standing height = 75th percentile of COM height (most of the time standing)
+    # "Going down" = COM drops > 30% of the total height range below standing
+    height_p75 = np.percentile(ws.com_height, 75)
+    height_range = ws.com_height.max() - ws.com_height.min()
+    drop_threshold = height_p75 - 0.30 * max(height_range, 0.1)
+    # Also require the drop to be at least 0.25m (25cm) below standing
+    # This prevents small bobbing from triggering footwork
+    min_absolute_drop = 0.25  # meters
+    effective_threshold = min(drop_threshold, height_p75 - min_absolute_drop)
+    is_below_standing = ws.com_height < effective_threshold
+
+    # Check if the dancer EVER goes down significantly
+    went_down = np.any(is_below_standing)
+
+    # Freeze: very low energy for sustained period
+    ke_thresh = np.percentile(ws.kinetic_energy, 15)
+    is_low_energy = ws.kinetic_energy < ke_thresh
+    # Require 0.3s sustained low energy to count as freeze
+    freeze_min_frames = int(0.3 * fps)
+    count = 0
+    for t in range(F):
+        if is_low_energy[t]:
+            count += 1
+        else:
+            if count >= freeze_min_frames:
+                labels[t - count:t] = 3
+            count = 0
+    if count >= freeze_min_frames:
+        labels[F - count:F] = 3
+
+    # Powermove: from cyclic_regions BUT only if COM actually drops
+    if went_down:
+        for region in ws.cyclic_regions:
+            sf = region["start_frame"]
+            ef = min(region["end_frame"], F)
+            # Only label as powermove if COM is actually low during this region
+            region_low = np.mean(is_below_standing[sf:ef]) > 0.3
+            if region_low:
+                labels[sf:ef] = 2
+
+    # Footwork: COM below standing threshold, not already freeze/power
+    # Only applies if the dancer actually went down
+    if went_down:
+        for t in range(F):
+            if labels[t] == 0 and is_below_standing[t]:
+                labels[t] = 1
+
+    # Convert frame labels to contiguous segments
+    type_names = {0: "toprock", 1: "footwork", 2: "powermove", 3: "freeze"}
+    segments = []
+    if F == 0:
+        return segments
+
+    current_label = labels[0]
+    start_frame = 0
+    for t in range(1, F):
+        if labels[t] != current_label:
+            dur = (t - start_frame) / fps
+            if dur >= min_duration_s:
+                segments.append({
+                    "start_s": round(start_frame / fps, 2),
+                    "end_s": round(t / fps, 2),
+                    "dance_type": type_names[current_label],
+                })
+            current_label = labels[t]
+            start_frame = t
+
+    # Final segment
+    dur = (F - start_frame) / fps
+    if dur >= min_duration_s:
+        segments.append({
+            "start_s": round(start_frame / fps, 2),
+            "end_s": round(F / fps, 2),
+            "dance_type": type_names[current_label],
+        })
+
+    return segments
+
+
 def print_summary(ws: WorldState) -> None:
     """Print human-readable summary of world state."""
     print(f"\n{'='*55}")

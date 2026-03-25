@@ -186,7 +186,18 @@ def main():
     # SMPLX returns 55+ joints
     # First 22 are anatomically equivalent in both
     joints_3d = output.joints[:, :22, :].numpy()  # (F, 22, 3)
-    print(f"  Joint positions: {joints_3d.shape} (frames x joints x xyz)")
+
+    # JOSH outputs in RDF camera frame (Y=down). Flip to Y=up world coords.
+    joints_3d[:, :, 1] *= -1
+
+    # Pad 22 → 24 joints for GVHMR compatibility
+    # Joints 22-23 are fingertips (L/R), approximate with wrist positions
+    pad = np.zeros((joints_3d.shape[0], 2, 3))
+    pad[:, 0] = joints_3d[:, 20]  # L.fingertip ≈ L.wrist
+    pad[:, 1] = joints_3d[:, 21]  # R.fingertip ≈ R.wrist
+    joints_3d = np.concatenate([joints_3d, pad], axis=1)  # (F, 24, 3)
+
+    print(f"  Joint positions: {joints_3d.shape} (frames x joints x xyz, Y-up, 24-joint)")
 
     # ─── Save ────────────────────────────────────────────────
     output_dir = os.path.dirname(output_path)
@@ -204,19 +215,17 @@ def main():
     max_displacement = float(np.max(root_displacements))
     max_disp_frame = int(np.argmax(root_displacements))
 
-    # Inversion test (head below pelvis)
-    # TODO: verify — TRAM pred_trans is Y-up; JOSH SMPL FK output may also be Y-up
-    # despite RDF camera coords. If so, revert to head_y < pelvis_y.
+    # Inversion test (head below pelvis) — Y-up convention after flip
     head_y = joints_3d[:, 15, 1]   # head joint, y coordinate
     pelvis_y = joints_3d[:, 0, 1]  # pelvis joint, y coordinate
-    inverted_frames = int(np.sum(head_y > pelvis_y))
+    inverted_frames = int(np.sum(head_y < pelvis_y))
 
     metadata = {
         "video": os.path.basename(josh_dir),
         "n_frames": int(n_frames),
-        "n_joints": 22,
+        "n_joints": 24,
         "joint_unit": "meters",
-        "coordinate_system": "world (JOSH, first camera as origin, RDF)",
+        "coordinate_system": "gravity-view (Y=up, metric scale, RDF→Y-up corrected)",
         "model": "JOSH (ICLR 2026)",
         "body_model": model_type,
         "fps": args.fps,

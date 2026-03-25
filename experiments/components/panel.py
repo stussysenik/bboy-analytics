@@ -17,6 +17,15 @@ C_ENERGY_LO = (50, 130, 200)
 C_ENERGY_HI = (255, 80, 40)
 C_COM = (255, 80, 80)
 C_CYCLIC = (80, 220, 140)
+C_BASS = (80, 220, 100)
+C_PERC = (255, 140, 50)
+C_HARM = (80, 160, 255)
+SEG_COLORS = {
+    "toprock":   (33, 150, 243),
+    "footwork":  (76, 175, 80),
+    "powermove": (220, 40, 40),
+    "freeze":    (156, 39, 176),
+}
 
 # SMPL 22-joint skeleton
 JOINT_NAMES = [

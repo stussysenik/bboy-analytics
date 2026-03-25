@@ -114,24 +114,66 @@ def project_ortho(point: np.ndarray, u_axis: int, v_axis: int, flip_u: bool,
     return sx, sy
 
 
+def speed_to_color(speed: float, max_speed: float = 5.0) -> tuple[int, int, int]:
+    """Map joint speed to color: blue (still) → orange → red (fast)."""
+    t = min(1.0, speed / max(max_speed, 0.01))
+    if t < 0.5:
+        # blue → orange
+        s = t * 2.0
+        r = int(50 + 205 * s)
+        g = int(130 + 10 * s)
+        b = int(200 - 150 * s)
+    else:
+        # orange → red
+        s = (t - 0.5) * 2.0
+        r = int(255)
+        g = int(140 - 100 * s)
+        b = int(50 - 50 * s)
+    return (r, g, b)
+
+
 class MultiViewPanel(Panel):
-    """4 orthographic skeleton views: front, side, back, top."""
+    """Orthographic skeleton views: 4-panel (front/side/back/top) or single FRONT.
+
+    Modes:
+      - views=None or views=VIEWS: classic 4-panel layout
+      - views=[("FRONT", 0, 1, False)]: single enlarged view
+      - speed_colored=True: joints colored by velocity (blue→red) instead of cluster
+      - ghost_trails=True: fading ghost positions on wrists/ankles
+    """
+
+    def __init__(self, width: int, height: int, state,
+                 views: list | None = None,
+                 speed_colored: bool = False,
+                 ghost_trails: bool = False):
+        super().__init__(width, height, state)
+        self._views = views if views is not None else VIEWS
+        self._speed_colored = speed_colored
+        self._ghost_trails = ghost_trails
+        self._ghost_joint_ids = [7, 8, 20, 21]  # ankles + wrists
+        self._ghost_frames = int(0.5 * state.fps)  # 0.5s trail
 
     def prerender(self) -> None:
         ws = self.state
         self._bounds = compute_bounds(ws.joints)
         self._n_joints = ws.joints.shape[1]
+        # Precompute max speed for normalization
+        if self._speed_colored and ws.joint_velocities is not None:
+            self._max_speed = float(np.percentile(ws.joint_velocities, 95))
+        else:
+            self._max_speed = 5.0
 
     def draw(self, frame_idx: int) -> Image.Image:
         img, d = self._blank()
         ws = self.state
         f = FontCache.get
 
-        pw = self.w // 4  # each sub-panel width
+        n_views = len(self._views)
+        pw = self.w // n_views  # each sub-panel width
         ph = self.h
         j_now = ws.joints[frame_idx]
 
-        for vi, (view_name, u_ax, v_ax, flip_u) in enumerate(VIEWS):
+        for vi, (view_name, u_ax, v_ax, flip_u) in enumerate(self._views):
             vx = vi * pw  # sub-panel x offset
             is_top = (view_name == "TOP")
 
@@ -141,21 +183,6 @@ class MultiViewPanel(Panel):
 
             # Panel border
             d.rectangle([vx, 0, vx + pw - 1, ph - 1], outline=(40, 40, 50))
-
-            # Grid lines (1m spacing)
-            axis_names = ["x", "y", "z"]
-            u_min, u_max = self._bounds[axis_names[u_ax]]
-            v_min, v_max = self._bounds[axis_names[v_ax]]
-            for val in np.arange(np.ceil(u_min), u_max, 1.0):
-                frac = (val - u_min) / max(u_max - u_min, 0.01)
-                if flip_u:
-                    frac = 1.0 - frac
-                gx = vx + int(frac * pw)
-                d.line([(gx, 0), (gx, ph)], fill=(30, 30, 40), width=1)
-            for val in np.arange(np.ceil(v_min), v_max, 1.0):
-                frac = (val - v_min) / max(v_max - v_min, 0.01)
-                gy = int(frac * ph) if is_top else ph - int(frac * ph)
-                d.line([(vx, gy), (vx + pw, gy)], fill=(30, 30, 40), width=1)
 
             # COM trail (2s = 60 frames)
             trail_len = min(60, frame_idx)
@@ -167,18 +194,41 @@ class MultiViewPanel(Panel):
                 d.ellipse([cpx - r, cpy - r, cpx + r, cpy + r],
                           fill=(*C_COM, min(alpha, 255)))
 
+            # Ghost trails on wrists/ankles (fading past positions)
+            if self._ghost_trails:
+                for gi in self._ghost_joint_ids:
+                    if gi >= self._n_joints:
+                        continue
+                    trail_start = max(0, frame_idx - self._ghost_frames)
+                    for ti in range(trail_start, frame_idx):
+                        prog = (ti - trail_start) / max(1, frame_idx - trail_start)
+                        alpha = int(20 + 80 * prog)
+                        gx, gy = proj(ws.joints[ti, gi])
+                        gr = max(1, int(3 * prog))
+                        gc = CLUSTER_COLORS.get(JOINT_CLUSTER.get(gi, "torso"), (150, 150, 150))
+                        d.ellipse([gx - gr, gy - gr, gx + gr, gy + gr],
+                                  fill=(*gc, alpha))
+
             # Skeleton wireframe
             for j1, j2 in BONES:
                 if j1 >= self._n_joints or j2 >= self._n_joints:
                     continue
                 p1 = proj(j_now[j1])
                 p2 = proj(j_now[j2])
-                c = CLUSTER_COLORS.get(JOINT_CLUSTER.get(j1, "torso"), (150, 150, 150))
+                if self._speed_colored and ws.joint_velocities is not None:
+                    spd = float(ws.joint_velocities[frame_idx, j1])
+                    c = speed_to_color(spd, self._max_speed)
+                else:
+                    c = CLUSTER_COLORS.get(JOINT_CLUSTER.get(j1, "torso"), (150, 150, 150))
                 d.line([p1, p2], fill=(*c, 200), width=2)
 
             # Joint dots
             for ji in range(self._n_joints):
-                c = CLUSTER_COLORS.get(JOINT_CLUSTER.get(ji, "torso"), (150, 150, 150))
+                if self._speed_colored and ws.joint_velocities is not None:
+                    spd = float(ws.joint_velocities[frame_idx, ji])
+                    c = speed_to_color(spd, self._max_speed)
+                else:
+                    c = CLUSTER_COLORS.get(JOINT_CLUSTER.get(ji, "torso"), (150, 150, 150))
                 px_j, py_j = proj(j_now[ji])
                 r = 4 if ji in {0, 1, 2, 7, 8, 15, 20, 21} else 2
                 d.ellipse([px_j - r, py_j - r, px_j + r, py_j + r], fill=(*c, 255))
@@ -187,38 +237,6 @@ class MultiViewPanel(Panel):
             cpx, cpy = proj(ws.com_pos[frame_idx])
             d.ellipse([cpx - 5, cpy - 5, cpx + 5, cpy + 5],
                       fill=(*C_COM, 255), outline=(255, 255, 255, 180))
-
-            # Joint labels (only labeled joints, smart placement)
-            lbl_font = f(bold=True, size=9)
-            for ji, name, side in LABELED_JOINTS:
-                if ji >= self._n_joints:
-                    continue
-                px_j, py_j = proj(j_now[ji])
-
-                # Compute label position based on side preference
-                if side == "above":
-                    lx, ly = px_j - 12, py_j - 16
-                elif side == "below":
-                    lx, ly = px_j - 12, py_j + 6
-                elif side == "left":
-                    lx, ly = px_j - 50, py_j - 6
-                elif side == "right":
-                    lx, ly = px_j + 8, py_j - 6
-
-                # Clamp to sub-panel bounds
-                lx = max(vx + 2, min(lx, vx + pw - 50))
-                ly = max(2, min(ly, ph - 14))
-
-                # Draw pill background + text
-                bb = d.textbbox((lx, ly), name, font=lbl_font)
-                d.rectangle([bb[0] - 2, bb[1] - 1, bb[2] + 2, bb[3] + 1],
-                            fill=(0, 0, 0, 160))
-                c = CLUSTER_COLORS.get(JOINT_CLUSTER.get(ji, "torso"), TXT)
-                d.text((lx, ly), name, fill=c, font=lbl_font)
-
-            # COM label
-            d.text((cpx + 7, cpy - 4), "COM", fill=(255, 215, 0),
-                   font=f(bold=True, size=9))
 
             # View title (top-left corner)
             d.text((vx + 6, 4), view_name, fill=TXT_DIM, font=f(bold=True, size=12))
