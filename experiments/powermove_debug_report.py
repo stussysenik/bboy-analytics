@@ -5,9 +5,13 @@ from __future__ import annotations
 import argparse
 import json
 import subprocess
+import sys
 from pathlib import Path
 
 import numpy as np
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from pipeline.brace_benchmark import (
     load_brace_ground_truth_2d,
@@ -100,6 +104,7 @@ def main() -> None:
     parser.add_argument("--brace-dir", default="data/brace")
     parser.add_argument("--video-id", required=True)
     parser.add_argument("--seq-idx", type=int, required=True)
+    parser.add_argument("--sequence-name", default="")
     parser.add_argument("--josh-joints", required=True)
     parser.add_argument("--josh-meta", required=True)
     parser.add_argument("--gvhmr-joints", required=True)
@@ -201,8 +206,15 @@ def main() -> None:
         ),
     }
 
+    out_dir = Path(args.output_dir)
+    if args.sequence_name:
+        out_dir = out_dir / args.sequence_name
+    else:
+        out_dir = out_dir / f"{sequence.video_id}_seq{sequence.seq_idx}"
+    out_dir = out_dir / target_segment.uid
+
     if args.render_top_k > 0 and args.video is not None:
-        render_root = Path(args.output_dir) / "renders"
+        render_root = out_dir / "renders"
         for candidate in report["candidate_windows"][: args.render_top_k]:
             render_path = _render_candidate(
                 repo_root=repo_root,
@@ -226,7 +238,7 @@ def main() -> None:
                 }
             )
 
-    outputs = write_diagnostics_outputs(report, args.output_dir)
+    outputs = write_diagnostics_outputs(report, out_dir)
     print(json.dumps(outputs, indent=2))
 
 

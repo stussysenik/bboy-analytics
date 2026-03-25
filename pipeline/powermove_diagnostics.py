@@ -23,6 +23,19 @@ from .brace_benchmark import (
 )
 from .compare import run_comparison
 
+DEFAULT_WINDOW_LADDER = (8, 12, 16, 24, 30, 45)
+
+
+def infer_josh_sidecar_paths(joints_path: str | Path) -> dict[str, Path]:
+    """Return the expected dense JOSH sibling artifact paths."""
+    joints_path = Path(joints_path)
+    return {
+        "valid_mask": joints_path.with_name("joints_3d_josh_valid_mask.npy"),
+        "source_track_ids": joints_path.with_name("joints_3d_josh_source_track_ids.npy"),
+        "metadata": joints_path.with_name("joints_3d_josh_metadata.json"),
+        "projected_2d": joints_path.with_name("joints_2d_josh_coco.npy"),
+    }
+
 
 def select_target_segment(
     segments: list[BraceSegment],
@@ -47,6 +60,58 @@ def select_target_segment(
         )
     )
     return candidates[0]
+
+
+def build_frame_diagnostics(
+    *,
+    sequence: BraceSequence,
+    segment: BraceSegment,
+    valid_mask: np.ndarray,
+    gt_frames: dict[int, np.ndarray],
+    shot_boundaries: list[int],
+) -> list[dict[str, Any]]:
+    """Emit per-frame availability rows for one BRACE segment."""
+    rows = []
+    shot_boundary_set = {int(boundary) for boundary in shot_boundaries}
+    for local_frame in range(segment.local_start_frame, segment.local_end_frame_exclusive):
+        rows.append(
+            {
+                "segment_uid": segment.uid,
+                "local_frame": local_frame,
+                "segment_frame": local_frame - segment.local_start_frame,
+                "global_frame": sequence.start_frame + local_frame,
+                "josh_valid": bool(valid_mask[local_frame]),
+                "brace_gt_available": bool(local_frame in gt_frames),
+                "shot_boundary": bool(local_frame in shot_boundary_set),
+            }
+        )
+    return rows
+
+
+def build_window_ladder(
+    *,
+    segment: BraceSegment,
+    josh_windows: list[dict[str, int]],
+    shot_boundaries: list[int],
+    thresholds: tuple[int, ...] = DEFAULT_WINDOW_LADDER,
+) -> list[dict[str, int]]:
+    """Summarize how many candidate windows survive each frame-length gate."""
+    ladder = []
+    for min_frames in thresholds:
+        windows = intersect_segment_windows(
+            segment,
+            josh_windows,
+            shot_boundaries,
+            min_window_frames=min_frames,
+        )
+        ladder.append(
+            {
+                "min_frames": int(min_frames),
+                "candidate_count": len(windows),
+                "best_n_frames": max((int(window.n_frames) for window in windows), default=0),
+            }
+        )
+    return ladder
 
 
 def _window_gt_status(
@@ -78,6 +143,17 @@ def _track_ids_for_slice(
         return []
     ids = np.asarray(source_track_ids[start:end_exclusive])[window_valid]
     return sorted({int(track_id) for track_id in ids})
+
+
+def _josh_loses_2d(candidate: dict[str, Any]) -> bool:
+    josh_2d = candidate.get("josh_2d")
+    gvhmr_2d = candidate.get("gvhmr_2d")
+    if josh_2d is None or gvhmr_2d is None:
+        return False
+    return (
+        josh_2d["mean_error_bbox_diag_frac"] > gvhmr_2d["mean_error_bbox_diag_frac"] + 0.05
+        or josh_2d["pck_0.2"] + 0.05 < gvhmr_2d["pck_0.2"]
+    )
 
 
 def _candidate_window_report(
@@ -258,6 +334,7 @@ def build_segment_diagnostics_report(
             f"the benchmark gate is {min_window_frames} frames."
         ),
     ]
+    best_candidate = candidate_reports[0] if candidate_reports else None
     if merged_segment_frames > 0:
         notes.append(
             "BRACE 2D overlap exists locally on "
@@ -285,6 +362,17 @@ def build_segment_diagnostics_report(
         next_actions = [
             "Benchmark the surviving candidate directly against GVHMR before changing capture assumptions.",
             "Use the candidate render strip to inspect inversion/contact plausibility and decide whether tuning is still needed.",
+        ]
+    elif best_candidate and _josh_loses_2d(best_candidate):
+        primary_bottleneck = "coverage_and_pose_quality"
+        notes.append(
+            "On the best available candidate window, JOSH is objectively worse than GVHMR on BRACE 2D, "
+            "so the blocker is not coverage alone."
+        )
+        next_actions = [
+            "Inspect the short candidate strip and its 2D reprojection before scheduling a full rerun.",
+            "Treat the immediate problem as mixed: JOSH must both extend coverage and improve pose quality on the surviving powermove slice.",
+            "If local assembly/tuning cannot improve the short slice, test a stronger prior before escalating to richer capture.",
         ]
     elif merged_segment_frames > 0:
         primary_bottleneck = "coverage_continuity"
@@ -314,6 +402,11 @@ def build_segment_diagnostics_report(
             "josh_renderability": josh_meta.get("stats", {}).get("renderability"),
             "josh_recommended_windows": josh_meta.get("stats", {}).get("recommended_windows", []),
         },
+        "window_ladder": build_window_ladder(
+            segment=segment,
+            josh_windows=josh_windows,
+            shot_boundaries=shot_boundaries,
+        ),
         "ground_truth_2d": {
             "status": gt_status,
             "segment_frames_available": merged_segment_frames,
@@ -329,6 +422,8 @@ def build_segment_diagnostics_report(
             "max_raw_overlap_frames": max_raw_overlap_frames,
             "frames_short_of_benchmark_gate": max(0, min_window_frames - max_raw_overlap_frames),
             "source_track_ids": segment_track_ids,
+            "best_candidate_frames": int(best_candidate["n_frames"]) if best_candidate else 0,
+            "best_candidate_is_benchmarkable": bool(best_candidate["is_benchmarkable"]) if best_candidate else False,
         },
         "candidate_windows": candidate_reports,
         "diagnosis": {
@@ -336,6 +431,13 @@ def build_segment_diagnostics_report(
             "notes": notes,
             "next_actions": next_actions,
         },
+        "frame_diagnostics": build_frame_diagnostics(
+            sequence=sequence,
+            segment=segment,
+            valid_mask=josh_valid_mask,
+            gt_frames=gt_frames,
+            shot_boundaries=shot_boundaries,
+        ),
         "review_renders": [],
     }
     return report
@@ -372,15 +474,39 @@ def render_markdown_report(report: dict[str, Any]) -> str:
     lines.extend(
         [
             "",
+            "## Window Ladder",
+            "",
+            "| Min Frames | Candidate Windows | Best Window |",
+            "|------------|-------------------|-------------|",
+        ]
+    )
+    for row in report.get("window_ladder", []):
+        lines.append(
+            f"| `{row['min_frames']}` | `{row['candidate_count']}` | `{row['best_n_frames']}` |"
+        )
+
+    lines.extend(
+        [
+            "",
             "## Candidate Windows",
             "",
-            "| Local Frames | Global Frames | Length | Track IDs | Benchmarkable | GT | Recommendation | Failure Tags |",
-            "|-------------|---------------|--------|-----------|---------------|----|----------------|--------------|",
+            "| Local Frames | Global Frames | Length | Track IDs | Benchmarkable | GT | JOSH 2D | GVHMR 2D | Recommendation | Failure Tags |",
+            "|-------------|---------------|--------|-----------|---------------|----|---------|----------|----------------|--------------|",
         ]
     )
     if report["candidate_windows"]:
         for candidate in report["candidate_windows"]:
             failure_tags = ", ".join(candidate["failure_tags"])
+            josh_2d = candidate["josh_2d"]
+            gvhmr_2d = candidate["gvhmr_2d"]
+            josh_2d_label = (
+                f"{josh_2d['mean_error_bbox_diag_frac']:.4f} / {josh_2d['pck_0.2']:.4f}"
+                if josh_2d else "n/a"
+            )
+            gvhmr_2d_label = (
+                f"{gvhmr_2d['mean_error_bbox_diag_frac']:.4f} / {gvhmr_2d['pck_0.2']:.4f}"
+                if gvhmr_2d else "n/a"
+            )
             lines.append(
                 f"| `{candidate['local_start_frame']}–{candidate['local_end_frame_exclusive']}` | "
                 f"`{candidate['global_start_frame']}–{candidate['global_end_frame_exclusive']}` | "
@@ -388,11 +514,13 @@ def render_markdown_report(report: dict[str, Any]) -> str:
                 f"{candidate['source_track_ids']} | "
                 f"{'yes' if candidate['is_benchmarkable'] else 'no'} | "
                 f"{candidate['gt_status']} | "
+                f"{josh_2d_label} | "
+                f"{gvhmr_2d_label} | "
                 f"{candidate['recommendation']} | "
                 f"{failure_tags} |"
             )
     else:
-        lines.append("| none | none | 0 | [] | no | unavailable | n/a | no contiguous JOSH overlap |")
+        lines.append("| none | none | 0 | [] | no | unavailable | n/a | n/a | n/a | no contiguous JOSH overlap |")
 
     lines.extend(
         [
@@ -439,6 +567,7 @@ def write_diagnostics_outputs(report: dict[str, Any], output_dir: str | Path) ->
     json_path = output_dir / "powermove_report.json"
     md_path = output_dir / "powermove_report.md"
     csv_path = output_dir / "candidate_windows.csv"
+    frame_csv_path = output_dir / "frame_diagnostics.csv"
 
     with open(json_path, "w") as f:
         json.dump(report, f, indent=2)
@@ -499,8 +628,39 @@ def write_diagnostics_outputs(report: dict[str, Any], output_dir: str | Path) ->
                 }
             )
 
+    frame_fields = [
+        "segment_uid",
+        "local_frame",
+        "segment_frame",
+        "global_frame",
+        "josh_valid",
+        "brace_gt_available",
+        "shot_boundary",
+    ]
+    with open(frame_csv_path, "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=frame_fields)
+        writer.writeheader()
+        for row in report.get("frame_diagnostics", []):
+            writer.writerow(row)
+
     return {
         "json": str(json_path),
         "markdown": str(md_path),
         "csv": str(csv_path),
+        "frame_csv": str(frame_csv_path),
     }
+
+
+def build_powermove_report(**kwargs: Any) -> dict[str, Any]:
+    """Compatibility alias with a clearer public name."""
+    return build_segment_diagnostics_report(**kwargs)
+
+
+def render_powermove_markdown(report: dict[str, Any]) -> str:
+    """Compatibility alias with a clearer public name."""
+    return render_markdown_report(report)
+
+
+def write_powermove_outputs(report: dict[str, Any], output_dir: str | Path) -> dict[str, str]:
+    """Compatibility alias with a clearer public name."""
+    return write_diagnostics_outputs(report, output_dir)
