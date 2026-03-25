@@ -4,7 +4,7 @@
 **Purpose**: Derived outputs for both the older musicality experiments and the current JOSH-first validation path: 3D joints, audio features, benchmark reports, metrics, and render-ready artifacts.
 **Total size**: ~199 MB
 
-**Current operational state**: `bcone_seq4` is `window_ready`, not `full_clip_ready`. The newest benchmark artifacts live under `benchmarks/bcone_seq4/` and should be treated as the canonical per-segment evidence for the current JOSH-vs-GVHMR comparison pass. That report now uses local BRACE manual+interpolated 2D keypoints.
+**Current operational state**: `bcone_seq4` is `window_ready`, not `full_clip_ready`. The newest benchmark artifacts live under `benchmarks/bcone_seq4/`, and the newest focused powermove diagnostics live under `powermove_diagnostics/bcone_seq4/RS0mFARO1x4.4332.4423/`. Together they are the canonical local evidence for the current JOSH-vs-GVHMR comparison pass.
 
 ---
 
@@ -64,6 +64,15 @@ All audio features extracted from the BC One 2011 video soundtrack using librosa
 | `benchmarks/bcone_seq4/benchmark.json` | 2026-03-25 13:23 | Machine-readable BRACE-aligned benchmark for `RS0mFARO1x4` seq4. JOSH is `window_ready`; only 1 of 5 segments is benchmarkable today, and that footwork window now has BRACE 2D metrics. |
 | `benchmarks/bcone_seq4/benchmark.md` | 2026-03-25 13:23 | Human-readable benchmark summary. The only benchmarkable segment is the final footwork window, and BRACE 2D currently favors JOSH on that slice. |
 | `benchmarks/bcone_seq4/windows.csv` | 2026-03-25 13:23 | One row per evaluated window with recommendation and failure tags. |
+
+## Powermove Diagnostics
+
+| Path | Date | Description |
+|------|------|-------------|
+| `powermove_diagnostics/bcone_seq4/RS0mFARO1x4.4332.4423/powermove_report.json` | 2026-03-25 13:38 | Machine-readable diagnostics for the failing powermove segment. Result: `coverage_and_pose_quality`, one 23-frame JOSH candidate, recommendation `keep_gvhmr_baseline` on that short slice. |
+| `powermove_diagnostics/bcone_seq4/RS0mFARO1x4.4332.4423/powermove_report.md` | 2026-03-25 13:38 | Human-readable summary of the same result, including the window ladder and local artifact paths. |
+| `powermove_diagnostics/bcone_seq4/RS0mFARO1x4.4332.4423/candidate_windows.csv` | 2026-03-25 13:38 | One row per candidate JOSH window inside the powermove segment. |
+| `powermove_diagnostics/bcone_seq4/RS0mFARO1x4.4332.4423/renders/comparison_landscape_530_553.mp4` | 2026-03-25 13:38 | Comparison strip for the best surviving short powermove candidate window. |
 
 ---
 
@@ -165,6 +174,7 @@ results/
   experiment_summary.json     3.0K   Experiment summary
   statistical_validation.json 1.6K   Statistical tests
   benchmarks/                 --     BRACE-aligned benchmark reports
+  powermove_diagnostics/      --     Focused failing-segment diagnostics and short review renders
   combined_analytics.mp4      38M    Multi-panel analytics video
   overlay_RS0mFARO1x4_seq4.mp4  50M  Video + mesh overlay
   gvhmr_mesh_seq4.mp4         42M    Mesh render (raw)

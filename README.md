@@ -26,6 +26,7 @@ Use the docs in this order:
 3. [ARCHITECTURE.md](ARCHITECTURE.md) — broader research architecture and layer survey
 4. [experiments/josh_research_report.md](experiments/josh_research_report.md) — detailed JOSH batch audit
 5. [experiments/josh_powermove_decision_framework.md](experiments/josh_powermove_decision_framework.md) — powermove strategy and pivot criteria
+6. [experiments/bcone_seq4_powermove_findings.md](experiments/bcone_seq4_powermove_findings.md) — tracked summary of the current powermove failure-attribution result
 
 ## Current Direction
 
@@ -49,6 +50,7 @@ The repo is no longer treating GVHMR as the main answer. The current engineering
 - `benchmark_josh_brace.py` now produces BRACE-aligned benchmark artifacts under `experiments/results/benchmarks/`, including BRACE 2D scoring when keypoints are local.
 - `fetch_brace_assets.py` downloads BRACE manual/interpolated keypoints for local benchmarking.
 - `export_josh_2d.py` projects dense JOSH joints into full-frame COCO-17 coordinates for BRACE 2D evaluation.
+- `powermove_debug_report.py` produces a focused BRACE-segment report with candidate-window tables, BRACE 2D comparisons, and optional review renders for failing powermoves.
 
 ## Scoring Model
 
@@ -87,6 +89,7 @@ Video → Track/Scene (TRAM + DECO + JOSH)
 | Validation | Is the sequence safe to render end-to-end? | `window_ready`, not `full_clip_ready` |
 | Segment scoring | Are BRACE semantics wired into the render path? | Yes |
 | Objective benchmark | Can we quantify JOSH vs GVHMR per segment/window? | Yes for `bcone_seq4`; manual+interpolated BRACE 2D is now local and the validated footwork window favors JOSH |
+| Powermove attribution | Do we know why the current powermove segment fails? | Yes for `bcone_seq4`: the surviving `530–553` JOSH slice is only 23 frames and still loses to GVHMR on BRACE 2D |
 
 ## Project Structure
 
@@ -104,6 +107,7 @@ Video → Track/Scene (TRAM + DECO + JOSH)
 │   │   └── observatory/           #     Real-time dashboard (8 modules)
 │   ├── render_breakdown.py        #   v4.1 composite (Instagram + landscape)
 │   ├── benchmark_josh_brace.py    #   BRACE-aligned JOSH vs GVHMR benchmark CLI
+│   ├── powermove_debug_report.py  #   Focused powermove failure-attribution CLI
 │   ├── render_skeleton.py         #   Skeleton overlay on video
 │   ├── render_spatial.py          #   Spatial coverage heatmap
 │   ├── render_timelines.py        #   Beat/energy/musicality timeline
@@ -120,7 +124,8 @@ Video → Track/Scene (TRAM + DECO + JOSH)
 │       ├── pitch/                 #     Elevated camera
 │       ├── worldstate/            #     Top-down view
 │   └── results/                   #   Derived data artifacts
-│       └── benchmarks/            #     Segment-class benchmark reports
+│       ├── benchmarks/            #     Segment-class benchmark reports
+│       └── powermove_diagnostics/ #     Focused failing-segment diagnostics
 ├── pipeline/                      # Batch data processing
 │   ├── extract.py                 #   GVHMR/JOSH → joints .npy
 │   ├── compare.py                 #   GVHMR vs JOSH comparison
@@ -189,6 +194,21 @@ python experiments/benchmark_josh_brace.py \
   --seq-idx 4 \
   --sequence-name bcone_seq4
 
+# Diagnose the failing powermove segment and render the top short candidate
+python experiments/powermove_debug_report.py \
+  --brace-dir data/brace \
+  --video-id RS0mFARO1x4 \
+  --seq-idx 4 \
+  --segment-uid RS0mFARO1x4.4332.4423 \
+  --josh-joints josh_input/bcone_seq4/joints_3d_josh.npy \
+  --josh-meta josh_input/bcone_seq4/joints_3d_josh_metadata.json \
+  --gvhmr-joints experiments/results/joints_3d_REAL_seq4.npy \
+  --gvhmr-2d experiments/results/vitpose_2d_seq4.npy \
+  --video josh_input/bcone_seq4/video.mp4 \
+  --beats experiments/results/beats.npy \
+  --audio josh_input/bcone_seq4/audio.wav \
+  --render-top-k 1
+
 # Individual renderers
 python experiments/render_skeleton.py --joints ... --mesh-video ...
 python experiments/render_spatial.py --joints ... --metrics ... --mesh-video ...
@@ -208,6 +228,7 @@ Key active research artifacts:
 - [experiments/josh_research_report.md](experiments/josh_research_report.md) — JOSH batch audit, tuning findings, and pipeline failure analysis
 - [experiments/josh_powermove_decision_framework.md](experiments/josh_powermove_decision_framework.md) — next-stage experiment logic: JOSH stabilization, BRACE benchmarking, HSMR/SKEL role, and when to escalate to sensor-rich capture
 - [experiments/results/benchmarks/bcone_seq4/benchmark.md](experiments/results/benchmarks/bcone_seq4/benchmark.md) — current BRACE 2D-backed benchmark report for `bcone_seq4`
+- [experiments/bcone_seq4_powermove_findings.md](experiments/bcone_seq4_powermove_findings.md) — tracked summary of the current powermove failure-attribution pass and the local artifact paths
 
 ## Environment
 

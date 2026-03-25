@@ -13,10 +13,11 @@
 
 1. [Current State Snapshot](#current-state-snapshot)
 2. [Research Evolution](#research-evolution)
-3. [2026-03-25 — Research Spine + BRACE Benchmark Harness](#2026-03-25--research-spine--brace-benchmark-harness)
-4. [2026-03-25 — JOSH Dense Extraction + Renderability Gates + BRACE Segment Scoring](#2026-03-25--josh-dense-extraction--renderability-gates--brace-segment-scoring)
-5. [2026-03-23 — POC Validated: Musicality Cross-Correlation Metric (μ)](#2026-03-23--poc-validated-musicality-cross-correlation-metric-μ)
-6. [2026-03-24 — v4.1 Breakdown Renderer + JOSH Pipeline Fix + Repo Reorganization](#2026-03-24--v41-breakdown-renderer--josh-pipeline-fix--repo-reorganization)
+3. [2026-03-25 — Powermove Failure Attribution Pass](#2026-03-25--powermove-failure-attribution-pass)
+4. [2026-03-25 — Research Spine + BRACE Benchmark Harness](#2026-03-25--research-spine--brace-benchmark-harness)
+5. [2026-03-25 — JOSH Dense Extraction + Renderability Gates + BRACE Segment Scoring](#2026-03-25--josh-dense-extraction--renderability-gates--brace-segment-scoring)
+6. [2026-03-23 — POC Validated: Musicality Cross-Correlation Metric (μ)](#2026-03-23--poc-validated-musicality-cross-correlation-metric-μ)
+7. [2026-03-24 — v4.1 Breakdown Renderer + JOSH Pipeline Fix + Repo Reorganization](#2026-03-24--v41-breakdown-renderer--josh-pipeline-fix--repo-reorganization)
 
 ---
 
@@ -27,11 +28,11 @@
 | Primary reconstruction path | JOSH-first |
 | Diagnostic baseline | GVHMR |
 | Ground truth source | BRACE annotations |
-| Current best evidence | Clean validated JOSH footwork window on `bcone_seq4` frames `780–824`, plus BRACE 2D benchmark support on the same slice |
+| Current best evidence | Clean validated JOSH footwork window on `bcone_seq4` frames `780–824`, plus a focused powermove report showing the current powermove candidate is only `23` frames and loses to GVHMR on BRACE 2D |
 | Current renderability | `window_ready`, not `full_clip_ready` |
-| Proven | Dense JOSH extraction, validation gating, BRACE-aware rendering, JOSH-vs-GVHMR side-by-side comparison, one-window BRACE 2D benchmark |
+| Proven | Dense JOSH extraction, validation gating, BRACE-aware rendering, JOSH-vs-GVHMR side-by-side comparison, one-window BRACE 2D benchmark, focused powermove failure attribution |
 | Unproven | Full-round JOSH stability, broad powermove superiority, multi-sequence BRACE 2D benchmark |
-| Immediate next gate | Benchmarkable powermove windows and longer JOSH-valid windows before more reruns |
+| Immediate next gate | Improve or replace JOSH on the surviving powermove candidate before more expensive reruns |
 
 ## Research Evolution
 
@@ -43,6 +44,62 @@
    Shifted the repo from GVHMR-as-answer to JOSH-as-candidate-primary-backbone with validation gating.
 4. **Benchmark phase**
    The next question is no longer “can we render something interesting?” but “where does JOSH actually beat GVHMR, and why does it still fail on the hard segments?”
+
+---
+
+## 2026-03-25 — Powermove Failure Attribution Pass
+
+### Objective
+
+Move the powermove discussion from speculation to a concrete segment-level diagnosis. The target was BRACE segment `RS0mFARO1x4.4332.4423`, which the benchmark had already flagged as non-benchmarkable under the current `45`-frame gate.
+
+### What Changed
+
+- Added `pipeline/powermove_diagnostics.py` for focused one-segment diagnostics.
+- Added `experiments/powermove_debug_report.py` to generate:
+  - `powermove_report.json`
+  - `powermove_report.md`
+  - `candidate_windows.csv`
+  - optional comparison renders for the top candidate windows
+- Added tests for short-window and mixed coverage/pose-quality failure cases.
+- Added a tracked research note:
+  - `experiments/bcone_seq4_powermove_findings.md`
+
+### Outputs Produced
+
+- `experiments/results/powermove_diagnostics/bcone_seq4/RS0mFARO1x4.4332.4423/powermove_report.json`
+- `experiments/results/powermove_diagnostics/bcone_seq4/RS0mFARO1x4.4332.4423/powermove_report.md`
+- `experiments/results/powermove_diagnostics/bcone_seq4/RS0mFARO1x4.4332.4423/candidate_windows.csv`
+- `experiments/results/powermove_diagnostics/bcone_seq4/RS0mFARO1x4.4332.4423/renders/comparison_landscape_530_553.mp4`
+
+### Result
+
+- Powermove segment: `RS0mFARO1x4.4332.4423`
+- Local frames: `530–621`
+- JOSH valid coverage: `23 / 91` frames (`25.3%`)
+- Longest contiguous JOSH overlap: `23` frames
+- Frames short of benchmark gate: `22`
+- Source track ids in valid region: `[1]`
+- BRACE 2D overlap: full segment available locally (`manual+interpolated`)
+- Primary bottleneck: `coverage_and_pose_quality`
+
+On the best available candidate window `530–553`:
+
+- JOSH 2D: `2.2126` bbox-diag frac, `PCK@0.2 = 0.0000`
+- GVHMR 2D: `0.0988` bbox-diag frac, `PCK@0.2 = 0.8670`
+- Recommendation on this short slice: `keep_gvhmr_baseline`
+
+### Why This Matters
+
+This is the first point where the repo can say something precise about a hard powermove failure:
+
+- the issue is not just “no long window”
+- the surviving short JOSH slice is also objectively wrong relative to BRACE 2D
+- so the next step is not a blind rerun; it is local tuning or stronger-prior testing against this exact slice
+
+### Next Gate
+
+Use the `530–553` candidate strip and report to decide whether local JOSH tuning can materially improve the powermove slice. If not, test a stronger prior before escalating to richer capture.
 
 ---
 

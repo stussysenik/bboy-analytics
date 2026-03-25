@@ -204,8 +204,9 @@ Question:
 Current answer:
 
 - **Partially**
-- We have the first segment-class structural benchmark
-- The current powermove evidence is still weak because the `bcone_seq4` powermove segment has no benchmarkable JOSH window yet
+- We have the first segment-class structural benchmark and a focused powermove failure-attribution pass
+- On `bcone_seq4`, the powermove segment still has no benchmarkable JOSH window
+- The best surviving JOSH slice is only `23` frames and also loses to GVHMR on BRACE 2D
 
 ---
 
@@ -233,6 +234,7 @@ The repo now proves:
 - BRACE labels can drive segment-aware scoring and overlays.
 - JOSH and GVHMR can be compared on the same source window.
 - BRACE 2D can now score the validated `bcone_seq4` footwork window directly.
+- The repo can now distinguish a powermove `coverage-only` failure from a `coverage + pose-quality` failure.
 
 That is real progress.
 
@@ -271,10 +273,13 @@ If you want the cleanest mental model, read in this order:
 5. [experiments/josh_powermove_decision_framework.md](/teamspace/studios/this_studio/experiments/josh_powermove_decision_framework.md)
    How to decide whether to keep pushing JOSH, try HSMR / SKEL, or escalate capture.
 
-6. [PROGRESS.md](/teamspace/studios/this_studio/PROGRESS.md)
+6. [experiments/bcone_seq4_powermove_findings.md](/teamspace/studios/this_studio/experiments/bcone_seq4_powermove_findings.md)
+   The current concrete powermove finding: one short JOSH window survives, and it still loses to GVHMR on BRACE 2D.
+
+7. [PROGRESS.md](/teamspace/studios/this_studio/PROGRESS.md)
    Chronological research log.
 
-7. [POC.md](/teamspace/studios/this_studio/POC.md)
+8. [POC.md](/teamspace/studios/this_studio/POC.md)
    Historical proof-of-concept framing.
 
 ---
@@ -290,7 +295,7 @@ The next phase should run on three tracks:
    Add 2D reprojection evaluation and segment-class reports.
 
 3. **Powermove-specific diagnostics**
-   Determine whether failures are mainly tracking, prior, contact, or information-limited.
+   Determine whether failures are mainly tracking, prior, contact, or information-limited. The first `bcone_seq4` answer is already mixed: short coverage plus bad pose quality on the surviving slice.
 
 Only after those tracks do we have enough evidence to make a serious pivot decision.
 

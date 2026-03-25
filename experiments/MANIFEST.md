@@ -19,6 +19,7 @@
 | `josh_research_report.md` | Deep audit of the overnight JOSH run: chunking, focal instability, contact issues, and tuning fixes. |
 | `josh_powermove_decision_framework.md` | Strategic next-step memo: what monocular YouTube can likely support, why powermoves are harder, when to try HSMR / SKEL, and when custom sensor-rich capture is justified. |
 | `results/benchmarks/bcone_seq4/benchmark.md` | Current BRACE 2D-backed benchmark for `bcone_seq4`: 1 benchmarkable footwork window, no benchmarkable powermove window yet, and the validated footwork slice now favors JOSH over the GVHMR baseline. |
+| `bcone_seq4_powermove_findings.md` | Tracked summary of the focused powermove diagnostics pass: the best surviving JOSH slice is only 23 frames and still loses to GVHMR on BRACE 2D. |
 
 ### Related Manifests (External)
 
@@ -48,6 +49,7 @@
 | `person_lock.py` | 4.1K | Person locking: segments `joints_3d_REAL.npy` into contiguous detection windows (produces `locked/` segments) |
 | `extract_2d.py` | 4.0K | Extracts 2D pose data (vitpose, bounding boxes, camera intrinsics) from GVHMR results into standalone numpy arrays |
 | `benchmark_josh_brace.py` | 9.5K | BRACE-aligned JOSH vs GVHMR benchmark CLI. Emits `benchmark.json`, `benchmark.md`, and `windows.csv` for evaluated sequences. |
+| `powermove_debug_report.py` | 8.8K | Focused BRACE segment diagnostics CLI for failing powermoves. Emits a report, candidate-window CSV, and optional review renders. |
 | `fetch_brace_assets.py` | 2.1K | Downloads and extracts BRACE manual/interpolated keypoints or audio features, optionally filtered to one video. |
 | `export_josh_2d.py` | 0.9K | Projects dense JOSH joints into full-frame COCO-17 image coordinates for BRACE 2D benchmarking. |
 
@@ -138,7 +140,7 @@ BRACE clip / local video
   |                                          | |
   +--> BRACE annotations ------------------- | |
                                              v v
-extract_2d.py / benchmark_josh_brace.py / render_*.py
+extract_2d.py / benchmark_josh_brace.py / powermove_debug_report.py / render_*.py
   |
   +--> legacy musicality experiments (EXP-001..008)
   +--> validated JOSH review renders
