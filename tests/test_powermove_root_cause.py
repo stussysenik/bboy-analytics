@@ -41,4 +41,7 @@ def test_compute_window_projection_diagnostics_separates_raw_and_aligned_error()
     assert metrics["frames_compared"] == 3
     assert metrics["mean_error_px"] > 0.0
     assert metrics["translation_aligned_error_px"] < 1e-4
+    assert metrics["translation_aligned_error_bbox_diag_frac"] < 1e-6
     assert metrics["similarity_aligned_error_px"] < 1e-4
+    assert metrics["similarity_aligned_error_bbox_diag_frac"] < 1e-6
+    assert metrics["mean_center_offset_bbox_diag_frac"] > 0.0

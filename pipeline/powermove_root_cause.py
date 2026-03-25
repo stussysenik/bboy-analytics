@@ -107,8 +107,11 @@ def compute_window_projection_diagnostics(
     raw_errors = []
     diag_norm_errors = []
     translation_aligned_errors = []
+    translation_aligned_diag_norm_errors = []
     similarity_aligned_errors = []
+    similarity_aligned_diag_norm_errors = []
     center_offsets = []
+    center_offsets_diag_norm = []
     scale_ratios = []
     out_of_frame = []
 
@@ -120,16 +123,22 @@ def compute_window_projection_diagnostics(
         diag_norm_errors.extend((np.linalg.norm(pred - gt, axis=1) / diag).tolist())
 
         pred_trans = pred - pred.mean(axis=0) + gt.mean(axis=0)
-        translation_aligned_errors.extend(np.linalg.norm(pred_trans - gt, axis=1).tolist())
+        trans_errors = np.linalg.norm(pred_trans - gt, axis=1)
+        translation_aligned_errors.extend(trans_errors.tolist())
+        translation_aligned_diag_norm_errors.extend((trans_errors / diag).tolist())
 
         pred_sim = similarity_align_2d(pred, gt)
-        similarity_aligned_errors.extend(np.linalg.norm(pred_sim - gt, axis=1).tolist())
+        sim_errors = np.linalg.norm(pred_sim - gt, axis=1)
+        similarity_aligned_errors.extend(sim_errors.tolist())
+        similarity_aligned_diag_norm_errors.extend((sim_errors / diag).tolist())
 
         pred_min = pred.min(axis=0)
         pred_max = pred.max(axis=0)
         gt_min = gt.min(axis=0)
         gt_max = gt.max(axis=0)
-        center_offsets.append(float(np.linalg.norm((pred_min + pred_max) / 2.0 - (gt_min + gt_max) / 2.0)))
+        center_offset = float(np.linalg.norm((pred_min + pred_max) / 2.0 - (gt_min + gt_max) / 2.0))
+        center_offsets.append(center_offset)
+        center_offsets_diag_norm.append(center_offset / diag)
         scale_ratios.append(_bbox_diag(pred) / _bbox_diag(gt))
         out_of_frame.append(
             float(
@@ -147,8 +156,11 @@ def compute_window_projection_diagnostics(
         "mean_error_px": round(float(np.mean(raw_errors)), 2),
         "mean_error_bbox_diag_frac": round(float(np.mean(diag_norm_errors)), 4),
         "translation_aligned_error_px": round(float(np.mean(translation_aligned_errors)), 2),
+        "translation_aligned_error_bbox_diag_frac": round(float(np.mean(translation_aligned_diag_norm_errors)), 4),
         "similarity_aligned_error_px": round(float(np.mean(similarity_aligned_errors)), 2),
+        "similarity_aligned_error_bbox_diag_frac": round(float(np.mean(similarity_aligned_diag_norm_errors)), 4),
         "mean_center_offset_px": round(float(np.mean(center_offsets)), 2),
+        "mean_center_offset_bbox_diag_frac": round(float(np.mean(center_offsets_diag_norm)), 4),
         "mean_scale_ratio_pred_over_gt": round(float(np.mean(scale_ratios)), 4),
         "fraction_joints_out_of_frame": round(float(np.mean(out_of_frame)), 4),
     }
@@ -319,9 +331,9 @@ def render_root_cause_markdown(report: dict[str, Any]) -> str:
         "",
         f"- Frames: `{target['start_frame']}–{target['end_frame_exclusive']}`",
         f"- Raw JOSH error: `{t['mean_error_px']} px` (`{t['mean_error_bbox_diag_frac']}` bbox-diag frac)",
-        f"- Translation-aligned error: `{t['translation_aligned_error_px']} px`",
-        f"- Similarity-aligned error: `{t['similarity_aligned_error_px']} px`",
-        f"- Mean center offset: `{t['mean_center_offset_px']} px`",
+        f"- Translation-aligned error: `{t['translation_aligned_error_px']} px` (`{t['translation_aligned_error_bbox_diag_frac']}` bbox-diag frac)",
+        f"- Similarity-aligned error: `{t['similarity_aligned_error_px']} px` (`{t['similarity_aligned_error_bbox_diag_frac']}` bbox-diag frac)",
+        f"- Mean center offset: `{t['mean_center_offset_px']} px` (`{t['mean_center_offset_bbox_diag_frac']}` bbox-diag frac)",
         f"- Mean scale ratio: `{t['mean_scale_ratio_pred_over_gt']}`",
         f"- Fraction of projected joints out of frame: `{t['fraction_joints_out_of_frame']}`",
         "",
@@ -329,9 +341,9 @@ def render_root_cause_markdown(report: dict[str, Any]) -> str:
         "",
         f"- Frames: `{control['start_frame']}–{control['end_frame_exclusive']}`",
         f"- Raw JOSH error: `{c['mean_error_px']} px` (`{c['mean_error_bbox_diag_frac']}` bbox-diag frac)",
-        f"- Translation-aligned error: `{c['translation_aligned_error_px']} px`",
-        f"- Similarity-aligned error: `{c['similarity_aligned_error_px']} px`",
-        f"- Mean center offset: `{c['mean_center_offset_px']} px`",
+        f"- Translation-aligned error: `{c['translation_aligned_error_px']} px` (`{c['translation_aligned_error_bbox_diag_frac']}` bbox-diag frac)",
+        f"- Similarity-aligned error: `{c['similarity_aligned_error_px']} px` (`{c['similarity_aligned_error_bbox_diag_frac']}` bbox-diag frac)",
+        f"- Mean center offset: `{c['mean_center_offset_px']} px` (`{c['mean_center_offset_bbox_diag_frac']}` bbox-diag frac)",
         f"- Mean scale ratio: `{c['mean_scale_ratio_pred_over_gt']}`",
         "",
         "## Conclusion",
