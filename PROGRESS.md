@@ -13,11 +13,12 @@
 
 1. [Current State Snapshot](#current-state-snapshot)
 2. [Research Evolution](#research-evolution)
-3. [2026-03-25 — Powermove Failure Attribution Pass](#2026-03-25--powermove-failure-attribution-pass)
-4. [2026-03-25 — Research Spine + BRACE Benchmark Harness](#2026-03-25--research-spine--brace-benchmark-harness)
-5. [2026-03-25 — JOSH Dense Extraction + Renderability Gates + BRACE Segment Scoring](#2026-03-25--josh-dense-extraction--renderability-gates--brace-segment-scoring)
-6. [2026-03-23 — POC Validated: Musicality Cross-Correlation Metric (μ)](#2026-03-23--poc-validated-musicality-cross-correlation-metric-μ)
-7. [2026-03-24 — v4.1 Breakdown Renderer + JOSH Pipeline Fix + Repo Reorganization](#2026-03-24--v41-breakdown-renderer--josh-pipeline-fix--repo-reorganization)
+3. [2026-03-25 — Model Generations + Evidence Audit](#2026-03-25--model-generations--evidence-audit)
+4. [2026-03-25 — Powermove Failure Attribution Pass](#2026-03-25--powermove-failure-attribution-pass)
+5. [2026-03-25 — Research Spine + BRACE Benchmark Harness](#2026-03-25--research-spine--brace-benchmark-harness)
+6. [2026-03-25 — JOSH Dense Extraction + Renderability Gates + BRACE Segment Scoring](#2026-03-25--josh-dense-extraction--renderability-gates--brace-segment-scoring)
+7. [2026-03-23 — POC Validated: Musicality Cross-Correlation Metric (μ)](#2026-03-23--poc-validated-musicality-cross-correlation-metric-μ)
+8. [2026-03-24 — v4.1 Breakdown Renderer + JOSH Pipeline Fix + Repo Reorganization](#2026-03-24--v41-breakdown-renderer--josh-pipeline-fix--repo-reorganization)
 
 ---
 
@@ -34,17 +35,50 @@
 | Proven | Dense JOSH extraction, validation gating, BRACE-aware rendering, JOSH-vs-GVHMR side-by-side comparison, one-window BRACE 2D benchmark, focused powermove failure attribution |
 | Unproven | Full-round JOSH stability, broad powermove superiority, multi-sequence BRACE 2D benchmark |
 | Immediate next gate | Improve JOSH camera-relative placement/scale on `530–553` before any rerun; only then re-evaluate pose quality and segment viability |
+| Canonical trust map | `experiments/model_generations_evidence_map.md` |
 
 ## Research Evolution
 
 1. **POC phase**
    Proved the musicality metric idea on synthetic / controlled data.
-2. **Rendering phase**
+2. **Historical negative phase**
+   PromptHMR/WHAC remains an important warning, but the repo only preserves it as a remembered negative signal, not a benchmark-complete artifact bundle.
+3. **Rendering phase**
    Built review surfaces and video outputs so motion quality could be inspected instead of inferred from metrics alone.
-3. **JOSH-first phase**
+4. **JOSH-first phase**
    Shifted the repo from GVHMR-as-answer to JOSH-as-candidate-primary-backbone with validation gating.
-4. **Benchmark phase**
+5. **Benchmark phase**
    The next question is no longer “can we render something interesting?” but “where does JOSH actually beat GVHMR, and why does it still fail on the hard segments?”
+
+## 2026-03-25 — Model Generations + Evidence Audit
+
+### Objective
+
+Separate local evidence from remembered history and paper-derived ideas so the repo stops treating every past attempt as equally informative.
+
+### What Changed
+
+- Added `experiments/model_generations_evidence_map.md`.
+- Audited current repo artifacts, autoresearch notes, git history, and nearby studio workspaces.
+- Documented a trust scale for claims:
+  - benchmarked locally,
+  - computed locally but not benchmark-complete,
+  - historical negative signal,
+  - paper-derived / research-only.
+
+### Why This Matters
+
+The project has accumulated enough generations that “we already tried a lot of models” can become misleading.
+
+The practical conclusion of the audit is:
+
+- the strongest local evidence now comes from the JOSH-first path, the BRACE benchmark path, and the powermove gate path,
+- PromptHMR/WHAC remains a real warning but not a preserved benchmark,
+- sibling studios are still useful as tools and failure examples, but not as reasons to reopen every old branch.
+
+### Outputs Produced
+
+- `experiments/model_generations_evidence_map.md`
 
 ---
 

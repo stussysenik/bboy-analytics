@@ -18,6 +18,7 @@
 |------|-------------|
 | `josh_research_report.md` | Deep audit of the overnight JOSH run: chunking, focal instability, contact issues, and tuning fixes. |
 | `josh_powermove_decision_framework.md` | Strategic next-step memo: what monocular YouTube can likely support, why powermoves are harder, when to try HSMR / SKEL, and when custom sensor-rich capture is justified. |
+| `model_generations_evidence_map.md` | Canonical trust map for the repo’s model history: which generations were actually computed locally, which are only historical negative signals, and which are still paper-derived ideas. |
 | `powermove_research_consolidation.md` | Consolidated studio memo: what was actually tried across PromptHMR/WHAC, GVHMR, JOSH, and autoresearch; what is proven; what is still speculative; and which intermediaries are missing. |
 | `results/benchmarks/bcone_seq4/benchmark.md` | Current BRACE 2D-backed benchmark for `bcone_seq4`: 1 benchmarkable footwork window, no benchmarkable powermove window yet, and the validated footwork slice now favors JOSH over the GVHMR baseline. |
 | `bcone_seq4_powermove_findings.md` | Tracked summary of the focused powermove diagnostics pass: the best surviving JOSH slice is only 23 frames and still loses to GVHMR on BRACE 2D. |

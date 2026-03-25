@@ -7,15 +7,16 @@ Quantitative breakdance battle analytics with a JOSH-first motion pipeline, BRAC
 1. [Start Here](#start-here)
 2. [Current Direction](#current-direction)
 3. [What Works Now](#what-works-now)
-4. [Scoring Model](#scoring-model)
-5. [Data Sources](#data-sources)
-6. [Pipeline](#pipeline)
-7. [Current Gates](#current-gates)
-8. [Project Structure](#project-structure)
-9. [Quick Start](#quick-start)
-10. [Research Log](#research-log)
-11. [Environment](#environment)
-12. [Related](#related)
+4. [Research Index](#research-index)
+5. [Scoring Model](#scoring-model)
+6. [Data Sources](#data-sources)
+7. [Pipeline](#pipeline)
+8. [Current Gates](#current-gates)
+9. [Project Structure](#project-structure)
+10. [Quick Start](#quick-start)
+11. [Research Log](#research-log)
+12. [Environment](#environment)
+13. [Related](#related)
 
 ## Start Here
 
@@ -23,10 +24,31 @@ Use the docs in this order:
 
 1. [KNOWLEDGE_MAP.md](KNOWLEDGE_MAP.md) — canonical map of the stack, gates, and model roles
 2. [README.md](README.md) — operational summary and commands
-3. [ARCHITECTURE.md](ARCHITECTURE.md) — broader research architecture and layer survey
-4. [experiments/josh_research_report.md](experiments/josh_research_report.md) — detailed JOSH batch audit
-5. [experiments/josh_powermove_decision_framework.md](experiments/josh_powermove_decision_framework.md) — powermove strategy and pivot criteria
-6. [experiments/bcone_seq4_powermove_findings.md](experiments/bcone_seq4_powermove_findings.md) — tracked summary of the current powermove failure-attribution result
+3. [experiments/model_generations_evidence_map.md](experiments/model_generations_evidence_map.md) — what each generation actually computed, what is only historical memory, and how much trust to assign each claim
+4. [ARCHITECTURE.md](ARCHITECTURE.md) — broader research architecture and layer survey
+5. [experiments/josh_research_report.md](experiments/josh_research_report.md) — detailed JOSH batch audit
+6. [experiments/josh_powermove_decision_framework.md](experiments/josh_powermove_decision_framework.md) — powermove strategy and pivot criteria
+7. [experiments/bcone_seq4_powermove_findings.md](experiments/bcone_seq4_powermove_findings.md) — tracked summary of the current powermove failure-attribution result
+
+## Research Index
+
+Use these documents by question:
+
+- `What is the stack and what is interchangeable?`
+  - [KNOWLEDGE_MAP.md](KNOWLEDGE_MAP.md)
+- `What generations of work exist and which ones are actually benchmarked?`
+  - [experiments/model_generations_evidence_map.md](experiments/model_generations_evidence_map.md)
+- `What did we learn from current JOSH runs?`
+  - [experiments/josh_research_report.md](experiments/josh_research_report.md)
+- `What is the current powermove verdict?`
+  - [experiments/bcone_seq4_powermove_findings.md](experiments/bcone_seq4_powermove_findings.md)
+  - [experiments/results/powermove_debug/bcone_seq4/RS0mFARO1x4.4332.4423/gates_report.md](experiments/results/powermove_debug/bcone_seq4/RS0mFARO1x4.4332.4423/gates_report.md)
+- `What is proven locally vs still speculative from autoresearch?`
+  - [experiments/powermove_research_consolidation.md](experiments/powermove_research_consolidation.md)
+  - [autoresearch/experiments/bboy-battle-analysis](autoresearch/experiments/bboy-battle-analysis)
+- `What other live workspaces may still be useful?`
+  - `/teamspace/studios/whac`
+  - `/teamspace/studios/sam-3-playground`
 
 ## Current Direction
 

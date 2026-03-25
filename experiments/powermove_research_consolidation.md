@@ -4,6 +4,8 @@
 **Date:** 2026-03-25  
 **Purpose:** Consolidate what this studio has actually tried, what is proven, what remains speculative, and what mathematical / computer-vision intermediaries are still missing for powermove understanding.
 
+For the repo-wide generation trust map, read [model_generations_evidence_map.md](/teamspace/studios/this_studio/experiments/model_generations_evidence_map.md) alongside this memo.
+
 ## Table Of Contents
 
 1. [Why This Exists](#why-this-exists)

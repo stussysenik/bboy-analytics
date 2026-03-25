@@ -16,9 +16,10 @@
 7. [Current Model Roles](#current-model-roles)
 8. [What The Repo Proves Today](#what-the-repo-proves-today)
 9. [What Remains Unproven](#what-remains-unproven)
-10. [Recommended Reading Order](#recommended-reading-order)
-11. [Near-Term Research Tracks](#near-term-research-tracks)
-12. [Bottom Line](#bottom-line)
+10. [Evidence And Generations](#evidence-and-generations)
+11. [Recommended Reading Order](#recommended-reading-order)
+12. [Near-Term Research Tracks](#near-term-research-tracks)
+13. [Bottom Line](#bottom-line)
 
 ---
 
@@ -221,6 +222,32 @@ Current answer:
 | **GVHMR** | 3D reconstruction backbone | Diagnostic baseline / comparison | Active |
 | **HSMR / SKEL** | Human prior / body model | Candidate future refinement path | Not integrated |
 | **Render breakdown** | Review surface | Human inspection and side-by-side comparison | Active |
+
+## Evidence And Generations
+
+The repo has multiple generations of work, but only some are strong enough to support current technical decisions.
+
+Use this split:
+
+- `Historical signal`
+  PromptHMR/WHAC-era notes and older architecture memos. Useful warnings, but not benchmark-complete local evidence.
+- `Computed but not benchmark-complete`
+  Older GVHMR outputs and review renders. Useful baselines and failure examples, but not sufficient by themselves.
+- `Benchmark-grade local evidence`
+  The JOSH-first dense extraction path, BRACE-backed benchmark path, and powermove failure-attribution path.
+- `Research-only input`
+  Autoresearch model surveys and external papers. Useful for candidate priors and scene/contact ideas, not proof that the repo already works there.
+
+The canonical map for this distinction is:
+
+- [experiments/model_generations_evidence_map.md](/teamspace/studios/this_studio/experiments/model_generations_evidence_map.md)
+
+This matters because “we tried many models” is only actionable if we can separate:
+
+- what was actually run,
+- what only produced visuals,
+- what only produced theory,
+- and what survived objective comparison on BRACE.
 
 ---
 
