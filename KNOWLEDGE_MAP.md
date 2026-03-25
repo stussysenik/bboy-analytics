@@ -273,13 +273,16 @@ If you want the cleanest mental model, read in this order:
 5. [experiments/josh_powermove_decision_framework.md](/teamspace/studios/this_studio/experiments/josh_powermove_decision_framework.md)
    How to decide whether to keep pushing JOSH, try HSMR / SKEL, or escalate capture.
 
-6. [experiments/bcone_seq4_powermove_findings.md](/teamspace/studios/this_studio/experiments/bcone_seq4_powermove_findings.md)
+6. [experiments/powermove_research_consolidation.md](/teamspace/studios/this_studio/experiments/powermove_research_consolidation.md)
+   Consolidated memo of all prior studio attempts, what is proven, and which missing intermediaries still block powermove understanding.
+
+7. [experiments/bcone_seq4_powermove_findings.md](/teamspace/studios/this_studio/experiments/bcone_seq4_powermove_findings.md)
    The current concrete powermove finding: one short JOSH window survives, and it still loses to GVHMR on BRACE 2D.
 
-7. [PROGRESS.md](/teamspace/studios/this_studio/PROGRESS.md)
+8. [PROGRESS.md](/teamspace/studios/this_studio/PROGRESS.md)
    Chronological research log.
 
-8. [POC.md](/teamspace/studios/this_studio/POC.md)
+9. [POC.md](/teamspace/studios/this_studio/POC.md)
    Historical proof-of-concept framing.
 
 ---

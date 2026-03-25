@@ -242,6 +242,7 @@ Key active research artifacts:
 - [KNOWLEDGE_MAP.md](KNOWLEDGE_MAP.md) — canonical stack map, gates, model roles, and reading order
 - [experiments/josh_research_report.md](experiments/josh_research_report.md) — JOSH batch audit, tuning findings, and pipeline failure analysis
 - [experiments/josh_powermove_decision_framework.md](experiments/josh_powermove_decision_framework.md) — next-stage experiment logic: JOSH stabilization, BRACE benchmarking, HSMR/SKEL role, and when to escalate to sensor-rich capture
+- [experiments/powermove_research_consolidation.md](experiments/powermove_research_consolidation.md) — consolidated memo of what this studio actually tried, what is proven, what is still speculative, and which mathematical intermediaries are still missing
 - [experiments/results/benchmarks/bcone_seq4/benchmark.md](experiments/results/benchmarks/bcone_seq4/benchmark.md) — current BRACE 2D-backed benchmark report for `bcone_seq4`
 - [experiments/bcone_seq4_powermove_findings.md](experiments/bcone_seq4_powermove_findings.md) — tracked summary of the current powermove failure-attribution pass and the local artifact paths
 - [experiments/results/powermove_debug/bcone_seq4/RS0mFARO1x4.4332.4423/gates_report.md](experiments/results/powermove_debug/bcone_seq4/RS0mFARO1x4.4332.4423/gates_report.md) — layered no-rerun gate verdict for the current powermove control slice
