@@ -268,7 +268,8 @@ def compute_world_state(
 
         # Sliding-window local μ (2s window)
         if HAS_SCIPY:
-            win_frames = int(2.0 * fps)
+            # Shrink the local correlation window for short diagnostic clips.
+            win_frames = min(int(2.0 * fps), F if F % 2 == 0 else max(F - 1, 2))
             M_norm = (M_raw - M_raw.mean()) / (M_raw.std() + 1e-8)
             sigma_frames = 0.05 * fps
             H_full = np.zeros(F)
@@ -278,19 +279,20 @@ def compute_world_state(
                     H_full += np.exp(-0.5 * ((np.arange(F) - fi) / sigma_frames) ** 2)
             H_norm = (H_full - H_full.mean()) / (H_full.std() + 1e-8)
 
-            half = win_frames // 2
-            for t in range(half, F - half):
-                m_win = M_norm[t - half:t + half]
-                h_win = H_norm[t - half:t + half]
-                corr_val = correlate(m_win, h_win, mode="full")
-                corr_val /= np.sqrt(np.sum(m_win ** 2) * np.sum(h_win ** 2)) + 1e-8
-                max_lag = int(0.15 * fps)  # ±150ms window
-                mid_c = len(corr_val) // 2
-                local_window = corr_val[max(0, mid_c - max_lag):mid_c + max_lag + 1]
-                local_mu[t] = float(np.max(local_window)) if len(local_window) > 0 else 0
-            # Fill edges
-            local_mu[:half] = local_mu[half]
-            local_mu[F - half:] = local_mu[F - half - 1]
+            if win_frames >= 2:
+                half = win_frames // 2
+                for t in range(half, F - half):
+                    m_win = M_norm[t - half:t + half]
+                    h_win = H_norm[t - half:t + half]
+                    corr_val = correlate(m_win, h_win, mode="full")
+                    corr_val /= np.sqrt(np.sum(m_win ** 2) * np.sum(h_win ** 2)) + 1e-8
+                    max_lag = int(0.15 * fps)  # ±150ms window
+                    mid_c = len(corr_val) // 2
+                    local_window = corr_val[max(0, mid_c - max_lag):mid_c + max_lag + 1]
+                    local_mu[t] = float(np.max(local_window)) if len(local_window) > 0 else 0
+                if half < F:
+                    local_mu[:half] = local_mu[half]
+                    local_mu[F - half:] = local_mu[F - half - 1]
 
     # ── Contact detection: foot/hand proximity to ground ─────────────
     # Joints: 7=L.ankle, 8=R.ankle, 10=L.foot, 11=R.foot, 20=L.wrist, 21=R.wrist
