@@ -1,5 +1,8 @@
 # bboy-analytics
 
+![Demo](demo.gif)
+
+
 Quantitative breakdance battle analytics with a JOSH-first motion pipeline, BRACE ground-truth segmentation, and renderable review outputs for difficult movement classes.
 
 ## Table Of Contents
